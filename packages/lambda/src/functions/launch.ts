@@ -1,4 +1,4 @@
-import {InvokeCommand} from '@aws-sdk/client-lambda';
+import {InvokeWithResponseStreamCommand} from '@aws-sdk/client-lambda';
 import {RenderInternals} from '@remotion/renderer';
 import fs, {existsSync, mkdirSync, rmSync} from 'node:fs';
 import {join} from 'node:path';
@@ -61,12 +61,11 @@ const callFunctionWithRetry = async ({
 	functionName: string;
 }): Promise<unknown> => {
 	try {
-		await getLambdaClient(getCurrentRegionInFunction()).send(
-			new InvokeCommand({
+		return await getLambdaClient(getCurrentRegionInFunction()).send(
+			new InvokeWithResponseStreamCommand({
 				FunctionName: functionName,
 				// @ts-expect-error
 				Payload: JSON.stringify(payload),
-				InvocationType: 'Event',
 			}),
 			{}
 		);
@@ -278,6 +277,8 @@ const innerLaunchHandler = async (params: LambdaPayload, options: Options) => {
 			launchFunctionConfig: {
 				version: VERSION,
 			},
+			// add the total chunk in here sir
+			totalChunks: chunks.length,
 		};
 		return payload;
 	});
@@ -364,7 +365,15 @@ const innerLaunchHandler = async (params: LambdaPayload, options: Options) => {
 
 	await Promise.all(
 		lambdaPayloads.map(async (payload) => {
-			await callFunctionWithRetry({payload, retries: 0, functionName});
+			console.log('functionName, lambdaPayloads', functionName);
+			const response = await callFunctionWithRetry({
+				payload,
+				retries: 0,
+				functionName,
+			});
+			console.log('functionName, response', response);
+
+			// twork this out
 		})
 	);
 
@@ -625,11 +634,14 @@ const innerLaunchHandler = async (params: LambdaPayload, options: Options) => {
 
 export const launchHandler = async (
 	params: LambdaPayload,
+
 	options: Options
 ) => {
 	if (params.type !== LambdaRoutines.launch) {
 		throw new Error('Expected launch type');
 	}
+
+	console.log('launchHandler', params);
 
 	try {
 		await innerLaunchHandler(params, options);

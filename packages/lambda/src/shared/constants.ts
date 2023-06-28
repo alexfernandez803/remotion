@@ -20,6 +20,7 @@ import type {
 import type {DownloadBehavior} from './content-disposition-header';
 import type {ExpensiveChunk} from './get-most-expensive-chunks';
 import type {LambdaCodec} from './validate-lambda-codec';
+import type {ReadStream} from 'fs';
 
 export const MIN_MEMORY = 512;
 export const MAX_MEMORY = 10240;
@@ -249,6 +250,8 @@ export type LambdaStartPayload = {
 	forceHeight: number | null;
 	forceWidth: number | null;
 	bucketName: string | null;
+	enableStreaming?: boolean;
+	onStream?: (streamPayload: StreamPayload) => void;
 };
 
 export type LambdaStatusPayload = {
@@ -257,6 +260,13 @@ export type LambdaStatusPayload = {
 	renderId: string;
 	version: string;
 	s3OutputProvider?: CustomCredentials;
+};
+
+export type StreamPayload = {
+	renderId: string;
+	chunk: number;
+	videoStream: ReadStream;
+	totalChunks: number;
 };
 
 export type LambdaPayloads = {
@@ -300,6 +310,8 @@ export type LambdaPayloads = {
 		webhook: WebhookOption;
 		forceHeight: number | null;
 		forceWidth: number | null;
+		enableStreaming?: boolean;
+		onStream?: (streamPayload: StreamPayload) => void;
 	};
 	status: LambdaStatusPayload;
 	renderer: {
@@ -337,6 +349,9 @@ export type LambdaPayloads = {
 		launchFunctionConfig: {
 			version: string;
 		};
+		enableStreaming?: boolean;
+		onStream?: (streamPayload: StreamPayload) => void;
+		totalChunks: number;
 	};
 	still: {
 		type: LambdaRoutines.still;
@@ -360,6 +375,8 @@ export type LambdaPayloads = {
 		forceHeight: number | null;
 		forceWidth: number | null;
 		bucketName: string | null;
+		enableStreaming?: boolean;
+		onStream?: (streamPayload: StreamPayload) => void;
 	};
 	compositions: {
 		type: LambdaRoutines.compositions;

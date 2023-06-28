@@ -14,6 +14,7 @@ import {rendererHandler} from './renderer';
 import {startHandler} from './start';
 import {stillHandler} from './still';
 
+// inject here
 export const handler = streamifyResponse(
 	async (
 		params: LambdaPayload,
@@ -23,6 +24,8 @@ export const handler = streamifyResponse(
 			getRemainingTimeInMillis: () => number;
 		}
 	): Promise<void> => {
+		console.log('handler fn ', params);
+
 		process.env.__RESERVED_IS_INSIDE_REMOTION_LAMBDA = 'true';
 		const timeoutInMilliseconds = context.getRemainingTimeInMillis();
 
@@ -55,6 +58,7 @@ export const handler = streamifyResponse(
 				inputProps: JSON.stringify(params.inputProps),
 				isWarm,
 			});
+
 			const response = await startHandler(params, {
 				expectedBucketOwner: currentUserId,
 			});
@@ -101,10 +105,20 @@ export const handler = streamifyResponse(
 				inputProps: JSON.stringify(params.inputProps),
 				isWarm,
 			});
+			console.log(
+				'params.type',
+				LambdaRoutines.renderer,
+				'renderId',
+				params.renderId,
+				'chunk',
+				params.chunk
+			);
+
 			await rendererHandler(params, {
 				expectedBucketOwner: currentUserId,
 				isWarm,
 			});
+
 			responseStream.end();
 			return;
 		}

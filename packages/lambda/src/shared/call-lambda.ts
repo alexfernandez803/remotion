@@ -16,6 +16,9 @@ export const callLambda = async <T extends LambdaRoutines>({
 	payload: Omit<LambdaPayloads[T], 'type'>;
 	region: AwsRegion;
 }): Promise<LambdaReturnValues[T]> => {
+	console.log('Call Lambda', functionName);
+	console.log('stringing', JSON.stringify({type, ...payload}));
+
 	const res = await getLambdaClient(region).send(
 		new InvokeWithResponseStreamCommand({
 			FunctionName: functionName,
@@ -29,6 +32,8 @@ export const callLambda = async <T extends LambdaRoutines>({
 	let responsePayload: Uint8Array = new Uint8Array();
 
 	for await (const event of events) {
+		// pass the stream back to the caller
+
 		// There are two types of events you can get on a stream.
 
 		// `PayloadChunk`: These contain the actual raw bytes of the chunk
@@ -82,6 +87,8 @@ export const callLambda = async <T extends LambdaRoutines>({
 
 		return JSON.parse(json.body) as LambdaReturnValues[T];
 	}
+
+	console.log('Non Streaming, ', json);
 
 	// Non-streaming: 3.3.95 and below
 	return json;

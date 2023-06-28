@@ -185,6 +185,7 @@ export const getProgress = async ({
 		renderMetadata,
 	});
 
+	/// this
 	const chunks = contents.filter((c) => c.Key?.startsWith(chunkKey(renderId)));
 	const framesRendered = renderMetadata
 		? getRenderedFramesProgress({

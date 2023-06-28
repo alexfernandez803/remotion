@@ -47,6 +47,8 @@ export const makeLambdaRenderMediaPayload = async ({
 	dumpBrowserLogs,
 	jpegQuality,
 	quality,
+	enableStreaming,
+	onStream,
 }: RenderMediaOnLambdaInput): Promise<LambdaStartPayload> => {
 	if (quality) {
 		throw new Error(
@@ -106,6 +108,8 @@ export const makeLambdaRenderMediaPayload = async ({
 		bucketName: bucketName ?? null,
 		audioCodec: audioCodec ?? null,
 		type: LambdaRoutines.start,
+		enableStreaming,
+		onStream,
 	};
 };
 

@@ -216,7 +216,8 @@ export const internalRenderMedia = ({
 	serveUrl,
 	server: reusedServer,
 	logLevel,
-}: InternalRenderMediaOptions): Promise<RenderMediaResult> => {
+}: // TODO - Progress
+InternalRenderMediaOptions): Promise<RenderMediaResult> => {
 	validateJpegQuality(jpegQuality);
 	validateQualitySettings({crf, codec, videoBitrate});
 	validateBitrate(audioBitrate, 'audioBitrate');
@@ -330,6 +331,7 @@ export const internalRenderMedia = ({
 		path.join(os.tmpdir(), 'react-motion-render')
 	);
 
+	console.log('workingDir', workingDir);
 	const preEncodedFileLocation = parallelEncoding
 		? path.join(
 				workingDir,
@@ -608,6 +610,7 @@ export const internalRenderMedia = ({
 					buffer,
 					slowestFrames,
 				};
+
 				resolve(result);
 			})
 			.catch((err) => {

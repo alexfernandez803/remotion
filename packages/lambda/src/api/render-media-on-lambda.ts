@@ -9,7 +9,7 @@ import type {
 } from '@remotion/renderer';
 import type {AwsRegion} from '../pricing/aws-regions';
 import {callLambda} from '../shared/call-lambda';
-import type {OutNameInput, Privacy} from '../shared/constants';
+import type {OutNameInput, Privacy, StreamPayload} from '../shared/constants';
 import {LambdaRoutines} from '../shared/constants';
 import type {DownloadBehavior} from '../shared/content-disposition-header';
 import {getCloudwatchStreamUrl, getS3RenderUrl} from '../shared/get-aws-urls';
@@ -63,6 +63,12 @@ export type RenderMediaOnLambdaInput = {
 	 * @deprecated in favor of `logLevel`: true
 	 */
 	dumpBrowserLogs?: boolean;
+
+	/**
+	 * Streaming
+	 */
+	enableStreaming?: boolean;
+	onStream?: (streamPayload: StreamPayload) => void;
 };
 
 export type RenderMediaOnLambdaOutput = {
@@ -97,6 +103,11 @@ export const renderMediaOnLambda = async (
 ): Promise<RenderMediaOnLambdaOutput> => {
 	const {functionName, region, rendererFunctionName} = input;
 
+	console.log('renderMediaOnLambda');
+	console.log('renderMediaOnLambda ', functionName);
+
+	console.log('renderMediaOnLambda input ', input);
+
 	try {
 		const res = await callLambda({
 			functionName,
@@ -127,6 +138,7 @@ export const renderMediaOnLambda = async (
 			);
 		}
 
+		console.log('err', err);
 		throw err;
 	}
 };

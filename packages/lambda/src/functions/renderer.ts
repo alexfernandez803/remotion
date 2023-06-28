@@ -6,6 +6,7 @@ import path from 'node:path';
 import {VERSION} from 'remotion/version';
 import {getLambdaClient} from '../shared/aws-clients';
 import {writeLambdaInitializedFile} from '../shared/chunk-progress';
+
 import type {LambdaPayload, LambdaPayloads} from '../shared/constants';
 import {
 	chunkKeyForIndex,
@@ -37,6 +38,7 @@ const renderHandler = async (
 	options: Options,
 	logs: BrowserLog[]
 ) => {
+	console.log('renderHandler params ', params);
 	if (params.type !== LambdaRoutines.renderer) {
 		throw new Error('Params must be renderer');
 	}
@@ -47,6 +49,7 @@ const renderHandler = async (
 		);
 	}
 
+	console.log('fn, renderHandler');
 	const inputPropsPromise = deserializeInputProps({
 		bucketName: params.bucketName,
 		expectedBucketOwner: options.expectedBucketOwner,
@@ -99,8 +102,11 @@ const renderHandler = async (
 		)}`
 	);
 
+	console.log('xxx outputLocation', outputLocation);
+
 	const downloads: Record<string, number> = {};
 
+	console.log('bfore outputLocation', outputLocation);
 	const inputProps = await inputPropsPromise;
 	await new Promise<void>((resolve, reject) => {
 		RenderInternals.internalRenderMedia({
@@ -115,6 +121,9 @@ const renderHandler = async (
 			inputProps,
 			frameRange: params.frameRange,
 			onProgress: ({renderedFrames, encodedFrames, stitchStage}) => {
+				// we should write the stuff in here
+				// console.log(`onProgress, renderedFrames`);
+				// responseStream.write(encodedFrames);
 				if (
 					renderedFrames % 5 === 0 &&
 					RenderInternals.isEqualOrBelowLogLevel(params.logLevel, 'verbose')
@@ -238,19 +247,29 @@ const renderHandler = async (
 		timings: Object.values(chunkTimingData.timings),
 	};
 
+	const fileStream = fs.createReadStream(outputLocation);
+
 	await lambdaWriteFile({
 		bucketName: params.bucketName,
 		key: chunkKeyForIndex({
 			renderId: params.renderId,
 			index: params.chunk,
 		}),
-		body: fs.createReadStream(outputLocation),
+		body: fileStream,
 		region: getCurrentRegionInFunction(),
 		privacy: params.privacy,
 		expectedBucketOwner: options.expectedBucketOwner,
 		downloadBehavior: null,
 		customCredentials: null,
 	});
+
+	console.log(
+		`outputLocation `,
+		params.chunk,
+		outputLocation,
+		fileStream,
+		params.chunk
+	);
 	await Promise.all([
 		fs.promises.rm(outputLocation, {recursive: true}),
 		fs.promises.rm(outputPath, {recursive: true}),
@@ -280,9 +299,13 @@ export const rendererHandler = async (
 		throw new Error('Params must be renderer');
 	}
 
+	// Heere
 	const logs: BrowserLog[] = [];
 
 	try {
+		console.log('Render handler');
+		console.log('Render ', params);
+
 		await renderHandler(params, options, logs);
 	} catch (err) {
 		if (process.env.NODE_ENV === 'test') {
@@ -304,6 +327,7 @@ export const rendererHandler = async (
 
 		console.log('Error occurred');
 		console.log(err);
+
 		await writeLambdaError({
 			bucketName: params.bucketName,
 			errorInfo: {
