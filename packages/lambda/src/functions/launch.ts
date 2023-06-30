@@ -1,4 +1,8 @@
-import {InvokeWithResponseStreamCommand} from '@aws-sdk/client-lambda';
+import type {InvokeWithResponseStreamCommandOutput} from '@aws-sdk/client-lambda';
+import {
+	InvokeCommand,
+	InvokeWithResponseStreamCommand,
+} from '@aws-sdk/client-lambda';
 import {RenderInternals} from '@remotion/renderer';
 import fs, {existsSync, mkdirSync, rmSync} from 'node:fs';
 import {join} from 'node:path';
@@ -45,6 +49,7 @@ import {
 	writeLambdaError,
 } from './helpers/write-lambda-error';
 import {writePostRenderData} from './helpers/write-post-render-data';
+import {parseStream} from './streaming-utils';
 
 type Options = {
 	expectedBucketOwner: string;
@@ -55,18 +60,27 @@ const callFunctionWithRetry = async ({
 	payload,
 	retries,
 	functionName,
+	isStreaming = true,
 }: {
 	payload: unknown;
 	retries: number;
 	functionName: string;
+	isStreaming?: boolean;
 }): Promise<unknown> => {
 	try {
 		return await getLambdaClient(getCurrentRegionInFunction()).send(
-			new InvokeWithResponseStreamCommand({
-				FunctionName: functionName,
-				// @ts-expect-error
-				Payload: JSON.stringify(payload),
-			}),
+			isStreaming
+				? new InvokeWithResponseStreamCommand({
+						FunctionName: functionName,
+						// @ts-expect-error
+						Payload: JSON.stringify(payload),
+				  })
+				: new InvokeCommand({
+						FunctionName: functionName,
+						// @ts-expect-error
+						Payload: JSON.stringify(payload),
+						InvocationType: 'Event',
+				  }),
 			{}
 		);
 	} catch (err) {
@@ -82,6 +96,7 @@ const callFunctionWithRetry = async ({
 				payload,
 				retries: retries + 1,
 				functionName,
+				isStreaming,
 			});
 		}
 
@@ -366,11 +381,26 @@ const innerLaunchHandler = async (params: LambdaPayload, options: Options) => {
 	await Promise.all(
 		lambdaPayloads.map(async (payload) => {
 			console.log('functionName, lambdaPayloads', functionName);
+
+			const isStreaming = params.enableStreaming ?? true;
+			console.log('isStreaming ', isStreaming);
 			const response = await callFunctionWithRetry({
 				payload,
 				retries: 0,
 				functionName,
+				isStreaming,
 			});
+
+			if (isStreaming) {
+				console.log('parseStream ', isStreaming);
+				await parseStream(
+					response as InvokeWithResponseStreamCommandOutput,
+					functionName,
+					payload.renderId,
+					payload.chunk
+				);
+			}
+
 			console.log('functionName, response', response);
 
 			// twork this out

@@ -8,21 +8,13 @@ import {getLambdaClient} from '../shared/aws-clients';
 import {writeLambdaInitializedFile} from '../shared/chunk-progress';
 
 import type {LambdaPayload, LambdaPayloads} from '../shared/constants';
-import {
-	chunkKeyForIndex,
-	LambdaRoutines,
-	lambdaTimingsKey,
-	RENDERER_PATH_TOKEN,
-} from '../shared/constants';
+import {LambdaRoutines, RENDERER_PATH_TOKEN} from '../shared/constants';
 import {deserializeInputProps} from '../shared/deserialize-input-props';
-import type {
-	ChunkTimingData,
-	ObjectChunkTimingData,
-} from './chunk-optimization/types';
+import type {ObjectChunkTimingData} from './chunk-optimization/types';
 import {getBrowserInstance} from './helpers/get-browser-instance';
 import {executablePath} from './helpers/get-chromium-executable-path';
 import {getCurrentRegionInFunction} from './helpers/get-current-region';
-import {lambdaWriteFile} from './helpers/io';
+
 import {
 	getTmpDirStateIfENoSp,
 	writeLambdaError,
@@ -63,7 +55,7 @@ const renderHandler = async (
 		params.chromiumOptions ?? {}
 	);
 
-	const outputPath = RenderInternals.tmpDir('remotion-render-');
+	// const outputPath = RenderInternals.tmpDir('remotion-render-');
 
 	if (typeof params.chunk !== 'number') {
 		throw new Error('must pass chunk');
@@ -240,15 +232,16 @@ const renderHandler = async (
 			.catch((err) => reject(err));
 	});
 
-	const endRendered = Date.now();
+	// const endRendered = Date.now();
 
-	const condensedTimingData: ChunkTimingData = {
+	/* const condensedTimingData: ChunkTimingData = {
 		...chunkTimingData,
 		timings: Object.values(chunkTimingData.timings),
 	};
-
+ */
 	const fileStream = fs.createReadStream(outputLocation);
 
+	/* 
 	await lambdaWriteFile({
 		bucketName: params.bucketName,
 		key: chunkKeyForIndex({
@@ -263,13 +256,6 @@ const renderHandler = async (
 		customCredentials: null,
 	});
 
-	console.log(
-		`outputLocation `,
-		params.chunk,
-		outputLocation,
-		fileStream,
-		params.chunk
-	);
 	await Promise.all([
 		fs.promises.rm(outputLocation, {recursive: true}),
 		fs.promises.rm(outputPath, {recursive: true}),
@@ -288,7 +274,9 @@ const renderHandler = async (
 			downloadBehavior: null,
 			customCredentials: null,
 		}),
-	]);
+	]); */
+
+	return fileStream;
 };
 
 export const rendererHandler = async (
@@ -306,7 +294,7 @@ export const rendererHandler = async (
 		console.log('Render handler');
 		console.log('Render ', params);
 
-		await renderHandler(params, options, logs);
+		return await renderHandler(params, options, logs);
 	} catch (err) {
 		if (process.env.NODE_ENV === 'test') {
 			console.log({err});

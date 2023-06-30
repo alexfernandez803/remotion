@@ -13,6 +13,10 @@ import {progressHandler} from './progress';
 import {rendererHandler} from './renderer';
 import {startHandler} from './start';
 import {stillHandler} from './still';
+import util from 'util';
+import stream from 'stream';
+
+const pipeline = util.promisify(stream.pipeline);
 
 // inject here
 export const handler = streamifyResponse(
@@ -114,10 +118,15 @@ export const handler = streamifyResponse(
 				params.chunk
 			);
 
-			await rendererHandler(params, {
+			const response = await rendererHandler(params, {
 				expectedBucketOwner: currentUserId,
 				isWarm,
 			});
+
+			if (response) {
+				console.log('rendererHandler responseStream');
+				await pipeline(response, responseStream);
+			}
 
 			responseStream.end();
 			return;
