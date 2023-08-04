@@ -18,6 +18,10 @@ The [serverless-app](https://github.com/alexfernandez803/remotion-serverless/tre
 Both functions are configured to be invoked through [API Gateway](https://aws.amazon.com/api-gateway/) and are secured by [Cognito](https://aws.amazon.com/cognito/). The API Gateway and Cognito setup is automatically created by the Serverless deployment script upon execution of `serverless deploy`.
 This assumes that you have knowledge in using [Serverless Framework](https://www.serverless.com/) and understand the syntax of [serverless.yml](https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml).
 
+:::info
+Ensure that the serverless-app and remotion-app match the remotion version.
+:::
+
 ## remotion-app
 
 This contains instructions for setting up and installing the `remotion` Lambda to your AWS account. This deployment is designed to be executed on your local machine.
