@@ -53,6 +53,10 @@ export const REMOTION_BUCKET_PREFIX = 'remotionlambda-';
 export const RENDER_FN_PREFIX = 'remotion-render-';
 export const LOG_GROUP_PREFIX = '/aws/lambda/';
 export const rendersPrefix = (renderId: string) => `renders/${renderId}`;
+export const rendersDaysPrefix = (day: number, renderId: string) =>
+	`renders/${day}days/${renderId}`;
+export const rendersLifeCyclePrefix = (day: number) => `renders/${day}days/*`;
+
 export const encodingProgressKey = (renderId: string) =>
 	`${rendersPrefix(renderId)}/encoding-progress.json`;
 export const renderMetadataKey = (renderId: string) =>

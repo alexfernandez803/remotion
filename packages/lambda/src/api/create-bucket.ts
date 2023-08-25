@@ -1,18 +1,24 @@
 import {
 	CreateBucketCommand,
+	DeleteBucketLifecycleCommand,
 	DeleteBucketOwnershipControlsCommand,
 	DeletePublicAccessBlockCommand,
 	PutBucketAclCommand,
+	PutBucketLifecycleConfigurationCommand,
 } from '@aws-sdk/client-s3';
+import {getLifeCycleRules} from '../functions/helpers/lifecycle';
 import type {AwsRegion} from '../pricing/aws-regions';
 import {getS3Client} from '../shared/aws-clients';
+import {createLifeCycleInput, deleteLifeCycleInput} from './apply-lifecyle';
 
 export const createBucket = async ({
 	region,
 	bucketName,
+	applyFileExpiry = false,
 }: {
 	region: AwsRegion;
 	bucketName: string;
+	applyFileExpiry?: boolean;
 }) => {
 	await getS3Client(region, null).send(
 		new CreateBucketCommand({
@@ -67,5 +73,22 @@ export const createBucket = async ({
 		}
 
 		throw err;
+	}
+
+	if (applyFileExpiry) {
+		const lcRules = getLifeCycleRules();
+
+		// assume that we have an existing lifecyle rule so we delete previous
+		const deleteCommandInput = deleteLifeCycleInput({bucketName, lcRules});
+		const deleteCommand = new DeleteBucketLifecycleCommand(deleteCommandInput);
+
+		await getS3Client(region, null).send(deleteCommand);
+
+		// create the lifecyle rules
+		const createCommandInput = createLifeCycleInput({bucketName, lcRules});
+		const createCommand = new PutBucketLifecycleConfigurationCommand(
+			createCommandInput
+		);
+		await getS3Client(region, null).send(createCommand);
 	}
 };
