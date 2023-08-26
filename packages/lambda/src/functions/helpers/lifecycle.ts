@@ -1,6 +1,6 @@
 import type {LifecycleRule} from '@aws-sdk/client-s3';
 
-export enum ExpiryDays {
+export enum RenderExpiryDays {
 	AFTER_1_DAYS = '1',
 	AFTER_3_DAYS = '3',
 	AFTER_7_DAYS = '7',
@@ -21,7 +21,7 @@ export const getLifeCycleRule = ({
 			Days: parseInt(value, 10),
 		},
 		Filter: {
-			Prefix: `renders/${value}days/*`,
+			Prefix: `renders/${value}days/`,
 		},
 		ID: `DELETE_${key}`,
 		Status: isEnabled ? 'Enabled' : 'Disabled',
@@ -29,7 +29,7 @@ export const getLifeCycleRule = ({
 };
 
 export const getLifeCycleRules = (): LifecycleRule[] => {
-	return Object.entries(ExpiryDays).map(([key, value]) =>
+	return Object.entries(RenderExpiryDays).map(([key, value]) =>
 		getLifeCycleRule({key, value, isEnabled: true})
 	);
 };

@@ -36,6 +36,7 @@ export const startHandler = async (params: LambdaPayload, options: Options) => {
 		(
 			await getOrCreateBucket({
 				region: getCurrentRegionInFunction(),
+				applyFileExpiry: false,
 			})
 		).bucketName;
 	const realServeUrl = convertToServeUrl({
@@ -93,6 +94,7 @@ export const startHandler = async (params: LambdaPayload, options: Options) => {
 		forceWidth: params.forceWidth,
 		rendererFunctionName: params.rendererFunctionName,
 		audioCodec: params.audioCodec,
+		renderFolderExpires: params.renderFolderExpires,
 	};
 
 	// Don't replace with callLambda(), we want to return before the render is snone

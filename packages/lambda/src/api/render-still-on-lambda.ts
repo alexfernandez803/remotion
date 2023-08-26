@@ -4,6 +4,7 @@ import type {
 	StillImageFormat,
 } from '@remotion/renderer';
 import {VERSION} from 'remotion/version';
+import type {RenderExpiryDays} from '../functions/helpers/lifecycle';
 import type {AwsRegion} from '../pricing/aws-regions';
 import {callLambda} from '../shared/call-lambda';
 import {
@@ -46,6 +47,7 @@ export type RenderStillOnLambdaInput = {
 	 */
 	dumpBrowserLogs?: boolean;
 	onInit?: (data: {renderId: string; cloudWatchLogs: string}) => void;
+	renderExpiryDays: RenderExpiryDays;
 };
 
 export type RenderStillOnLambdaOutput = {
@@ -98,6 +100,7 @@ export const renderStillOnLambda = async ({
 	forceBucketName,
 	dumpBrowserLogs,
 	onInit,
+	renderExpiryDays,
 }: RenderStillOnLambdaInput): Promise<RenderStillOnLambdaOutput> => {
 	if (quality) {
 		throw new Error(
@@ -140,6 +143,7 @@ export const renderStillOnLambda = async ({
 				forceHeight: forceHeight ?? null,
 				forceWidth: forceWidth ?? null,
 				bucketName: forceBucketName ?? null,
+				renderExpiryDays,
 			},
 			region,
 			receivedStreamingPayload: (payload) => {

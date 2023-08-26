@@ -13,6 +13,7 @@ import {
 import type {LambdaCodec} from '../../shared/validate-lambda-codec';
 import {inspectErrors} from './inspect-errors';
 import {lambdaLs, lambdaReadFile} from './io';
+import type {RenderExpiryDays} from './lifecycle';
 import {timer} from './timer';
 import type {EnhancedErrorInfo} from './write-lambda-error';
 
@@ -65,6 +66,7 @@ export const getAllFilesS3 = ({
 	region,
 	expectedBucketOwner,
 	onErrors,
+	renderExpiryDays,
 }: {
 	bucket: string;
 	expectedFiles: number;
@@ -73,12 +75,13 @@ export const getAllFilesS3 = ({
 	region: AwsRegion;
 	expectedBucketOwner: string;
 	onErrors: (errors: EnhancedErrorInfo[]) => void;
+	renderExpiryDays: RenderExpiryDays | null;
 }): Promise<string[]> => {
 	const alreadyDownloading: {[key: string]: true} = {};
 	const downloaded: {[key: string]: true} = {};
 
 	const getFiles = async () => {
-		const prefix = rendersPrefix(renderId);
+		const prefix = rendersPrefix(renderId, renderExpiryDays);
 		const lsTimer = timer('Listing files');
 		const contents = await lambdaLs({
 			bucketName: bucket,

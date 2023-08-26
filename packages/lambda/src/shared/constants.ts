@@ -11,6 +11,7 @@ import type {
 } from '@remotion/renderer';
 import type {VideoConfig} from 'remotion';
 import type {ChunkRetry} from '../functions/helpers/get-retry-stats';
+import type {RenderExpiryDays} from '../functions/helpers/lifecycle';
 import type {EnhancedErrorInfo} from '../functions/helpers/write-lambda-error';
 import type {AwsRegion} from '../pricing/aws-regions';
 import type {
@@ -52,85 +53,128 @@ export const ENCODING_PROGRESS_STEP_SIZE = 100;
 export const REMOTION_BUCKET_PREFIX = 'remotionlambda-';
 export const RENDER_FN_PREFIX = 'remotion-render-';
 export const LOG_GROUP_PREFIX = '/aws/lambda/';
-export const rendersPrefix = (renderId: string) => `renders/${renderId}`;
-export const rendersDaysPrefix = (day: number, renderId: string) =>
-	`renders/${day}days/${renderId}`;
+export const rendersPrefix = (
+	renderId: string,
+	deleteAfter: RenderExpiryDays | null
+) =>
+	deleteAfter
+		? rendersDaysPrefix(deleteAfter, renderId)
+		: `renders/${renderId}`;
+export const rendersDaysPrefix = (
+	renderExpiryDays: RenderExpiryDays,
+	renderId: string
+) => `renders/${renderExpiryDays}days/${renderId}`;
 export const rendersLifeCyclePrefix = (day: number) => `renders/${day}days/*`;
 
-export const encodingProgressKey = (renderId: string) =>
-	`${rendersPrefix(renderId)}/encoding-progress.json`;
-export const renderMetadataKey = (renderId: string) =>
-	`${rendersPrefix(renderId)}/pre-render-metadata.json`;
-export const initalizedMetadataKey = (renderId: string) =>
-	`${rendersPrefix(renderId)}/initialized.txt`;
-export const lambdaChunkInitializedPrefix = (renderId: string) =>
-	`${rendersPrefix(renderId)}/lambda-initialized`;
+export const encodingProgressKey = (
+	renderId: string,
+	renderExpiryDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, renderExpiryDays)}/encoding-progress.json`;
+export const renderMetadataKey = (
+	renderId: string,
+	renderExpiryDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, renderExpiryDays)}/pre-render-metadata.json`;
+export const initalizedMetadataKey = (
+	renderId: string,
+	renderExpiryDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, renderExpiryDays)}/initialized.txt`;
+export const lambdaChunkInitializedPrefix = (
+	renderId: string,
+	renderExpiryDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, renderExpiryDays)}/lambda-initialized`;
 export const lambdaChunkInitializedKey = ({
 	renderId,
 	chunk,
 	attempt,
+	expiryRenderDays,
 }: {
 	attempt: number;
 	renderId: string;
 	chunk: number;
+	expiryRenderDays: RenderExpiryDays;
 }) =>
 	`${lambdaChunkInitializedPrefix(
-		renderId
+		renderId,
+		expiryRenderDays
 	)}-chunk:${chunk}-attempt:${attempt}.txt`;
-export const lambdaTimingsPrefix = (renderId: string) =>
-	`${rendersPrefix(renderId)}/lambda-timings/chunk:`;
+export const lambdaTimingsPrefix = (
+	renderId: string,
+	expiryRenderDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, expiryRenderDays)}/lambda-timings/chunk:`;
 
-export const lambdaTimingsPrefixForChunk = (renderId: string, chunk: number) =>
-	lambdaTimingsPrefix(renderId) + String(chunk).padStart(8, '0');
+export const lambdaTimingsPrefixForChunk = (
+	renderId: string,
+	chunk: number,
+	expiryRenderDays: RenderExpiryDays
+) =>
+	lambdaTimingsPrefix(renderId, expiryRenderDays) +
+	String(chunk).padStart(8, '0');
 
 export const lambdaLogsPrefix = (
 	renderId: string,
 	chunk: number,
 	startFrame: number,
-	endFrame: number
+	endFrame: number,
+	expiryRenderDays: RenderExpiryDays
 ) =>
-	`${rendersPrefix(renderId)}/logs/chunk:${String(chunk).padStart(
-		8,
-		'0'
-	)}:frames:${startFrame}-${endFrame}.json`;
+	`${rendersPrefix(renderId, expiryRenderDays)}/logs/chunk:${String(
+		chunk
+	).padStart(8, '0')}:frames:${startFrame}-${endFrame}.json`;
 
 export const lambdaTimingsKey = ({
 	renderId,
 	chunk,
 	start,
 	rendered,
+	expiryRenderDays,
 }: {
 	renderId: string;
 	chunk: number;
 	start: number;
 	rendered: number;
+	expiryRenderDays: RenderExpiryDays;
 }) =>
 	`${lambdaTimingsPrefixForChunk(
 		renderId,
-		chunk
+		chunk,
+		expiryRenderDays
 	)}-start:${start}-rendered:${rendered}.txt`;
-export const chunkKey = (renderId: string) =>
-	`${rendersPrefix(renderId)}/chunks/chunk`;
+export const chunkKey = (
+	renderId: string,
+	expiryRenderDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, expiryRenderDays)}/chunks/chunk`;
 export const chunkKeyForIndex = ({
 	renderId,
 	index,
+	expiryRenderDays,
 }: {
 	renderId: string;
 	index: number;
-}) => `${chunkKey(renderId)}:${String(index).padStart(8, '0')}`;
+	expiryRenderDays: RenderExpiryDays;
+}) =>
+	`${chunkKey(renderId, expiryRenderDays)}:${String(index).padStart(8, '0')}`;
 
-export const getErrorKeyPrefix = (renderId: string) =>
-	`${rendersPrefix(renderId)}/errors/`;
+export const getErrorKeyPrefix = (
+	renderId: string,
+	expiryRenderDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, expiryRenderDays)}/errors/`;
 
 export const getErrorFileName = ({
 	renderId,
 	chunk,
 	attempt,
+	expiryRenderDays,
 }: {
 	renderId: string;
 	chunk: number | null;
 	attempt: number;
-}) => getErrorKeyPrefix(renderId) + ':chunk-' + chunk + ':attempt-' + attempt;
+	expiryRenderDays: RenderExpiryDays;
+}) =>
+	getErrorKeyPrefix(renderId, expiryRenderDays) +
+	':chunk-' +
+	chunk +
+	':attempt-' +
+	attempt;
 
 export type OutNameInput =
 	| string
@@ -155,19 +199,26 @@ export type OutNameOutput = {
 };
 
 export const getSitesKey = (siteId: string) => `sites/${siteId}`;
-export const outName = (renderId: string, extension: string) =>
-	`${rendersPrefix(renderId)}/out.${extension}`;
-export const outStillName = (renderId: string, imageFormat: StillImageFormat) =>
-	`${rendersPrefix(renderId)}/out.${imageFormat}`;
+export const outName = (
+	renderId: string,
+	extension: string,
+	expiryRenderDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, expiryRenderDays)}/out.${extension}`;
+export const outStillName = (
+	renderId: string,
+	imageFormat: StillImageFormat,
+	expiryRenderDays: RenderExpiryDays
+) => `${rendersPrefix(renderId, expiryRenderDays)}/out.${imageFormat}`;
 export const customOutName = (
 	renderId: string,
 	bucketName: string,
-	name: OutNameInput
+	name: OutNameInput,
+	expiryRenderDays: RenderExpiryDays
 ): OutNameOutput => {
 	if (typeof name === 'string') {
 		return {
 			renderBucketName: bucketName,
-			key: `${rendersPrefix(renderId)}/${name}`,
+			key: `${rendersPrefix(renderId, expiryRenderDays)}/${name}`,
 			customCredentials: null,
 		};
 	}
@@ -179,8 +230,14 @@ export const customOutName = (
 	};
 };
 
-export const postRenderDataKey = (renderId: string) => {
-	return `${rendersPrefix(renderId)}/post-render-metadata.json`;
+export const postRenderDataKey = (
+	renderId: string,
+	expiryRenderDays: RenderExpiryDays
+) => {
+	return `${rendersPrefix(
+		renderId,
+		expiryRenderDays
+	)}/post-render-metadata.json`;
 };
 
 export const defaultPropsKey = (hash: string) => {
@@ -261,6 +318,7 @@ export type LambdaStartPayload = {
 	forceHeight: number | null;
 	forceWidth: number | null;
 	bucketName: string | null;
+	renderFolderExpires: RenderExpiryDays | null;
 };
 
 export type LambdaStatusPayload = {
@@ -269,6 +327,7 @@ export type LambdaStatusPayload = {
 	renderId: string;
 	version: string;
 	s3OutputProvider?: CustomCredentials;
+	renderFolderExpires: RenderExpiryDays | null;
 };
 
 export type LambdaPayloads = {
@@ -312,6 +371,7 @@ export type LambdaPayloads = {
 		webhook: WebhookOption;
 		forceHeight: number | null;
 		forceWidth: number | null;
+		renderFolderExpires: RenderExpiryDays | null;
 	};
 	status: LambdaStatusPayload;
 	renderer: {
@@ -350,6 +410,7 @@ export type LambdaPayloads = {
 		launchFunctionConfig: {
 			version: string;
 		};
+		renderFolderExpires: RenderExpiryDays | null;
 	};
 	still: {
 		type: LambdaRoutines.still;
@@ -373,6 +434,7 @@ export type LambdaPayloads = {
 		forceHeight: number | null;
 		forceWidth: number | null;
 		bucketName: string | null;
+		renderFolderExpires: RenderExpiryDays | null;
 	};
 	compositions: {
 		type: LambdaRoutines.compositions;

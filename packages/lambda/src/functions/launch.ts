@@ -268,6 +268,7 @@ const innerLaunchHandler = async (
 				version: VERSION,
 			},
 			resolvedProps: serializedResolvedProps,
+			renderFolderExpires: params.renderFolderExpires,
 		};
 		return payload;
 	});
@@ -444,6 +445,7 @@ const innerLaunchHandler = async (
 		region: getCurrentRegionInFunction(),
 		expectedBucketOwner: options.expectedBucketOwner,
 		onErrors,
+		renderExpiryDays: params.renderFolderExpires,
 	});
 	const encodingStart = Date.now();
 	const {outfile, cleanupChunksProm} = await concatVideosS3({
@@ -473,7 +475,7 @@ const innerLaunchHandler = async (
 
 	const contents = await lambdaLs({
 		bucketName: params.bucketName,
-		prefix: rendersPrefix(params.renderId),
+		prefix: rendersPrefix(params.renderId, params.renderFolderExpires),
 		expectedBucketOwner: options.expectedBucketOwner,
 		region: getCurrentRegionInFunction(),
 	});

@@ -29,6 +29,7 @@ import {getRetryStats} from './get-retry-stats';
 import {getTimeToFinish} from './get-time-to-finish';
 import {inspectErrors} from './inspect-errors';
 import {lambdaLs} from './io';
+import type {RenderExpiryDays} from './lifecycle';
 import {makeTimeoutError} from './make-timeout-error';
 import type {EnhancedErrorInfo} from './write-lambda-error';
 
@@ -40,6 +41,7 @@ export const getProgress = async ({
 	memorySizeInMb,
 	timeoutInMilliseconds,
 	customCredentials,
+	renderExpiryDays,
 }: {
 	bucketName: string;
 	renderId: string;
@@ -48,6 +50,7 @@ export const getProgress = async ({
 	memorySizeInMb: number;
 	timeoutInMilliseconds: number;
 	customCredentials: CustomCredentials | null;
+	renderExpiryDays: RenderExpiryDays | null;
 }): Promise<RenderProgress> => {
 	const postRenderData = await getPostRenderData({
 		bucketName,
@@ -110,7 +113,7 @@ export const getProgress = async ({
 
 	const contents = await lambdaLs({
 		bucketName,
-		prefix: rendersPrefix(renderId),
+		prefix: rendersPrefix(renderId, renderExpiryDays),
 		region: getCurrentRegionInFunction(),
 		expectedBucketOwner,
 	});

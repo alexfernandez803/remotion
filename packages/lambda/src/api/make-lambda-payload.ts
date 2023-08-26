@@ -50,6 +50,7 @@ export const makeLambdaRenderMediaPayload = async ({
 	dumpBrowserLogs,
 	jpegQuality,
 	quality,
+	renderFolderExpires,
 }: RenderMediaOnLambdaInput): Promise<LambdaStartPayload> => {
 	if (quality) {
 		throw new Error(
@@ -115,6 +116,7 @@ export const makeLambdaRenderMediaPayload = async ({
 		bucketName: bucketName ?? null,
 		audioCodec: audioCodec ?? null,
 		type: LambdaRoutines.start,
+		renderFolderExpires,
 	};
 };
 
@@ -122,6 +124,7 @@ export const getRenderProgressPayload = ({
 	bucketName,
 	renderId,
 	s3OutputProvider,
+	renderFolderExpires,
 }: GetRenderProgressInput): LambdaStatusPayload => {
 	return {
 		type: LambdaRoutines.status,
@@ -129,5 +132,6 @@ export const getRenderProgressPayload = ({
 		renderId,
 		version: VERSION,
 		s3OutputProvider,
+		renderFolderExpires,
 	};
 };

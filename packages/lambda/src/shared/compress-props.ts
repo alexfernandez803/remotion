@@ -72,6 +72,7 @@ export const compressInputProps = async ({
 			(
 				await getOrCreateBucket({
 					region,
+					applyFileExpiry: false,
 				})
 			).bucketName;
 

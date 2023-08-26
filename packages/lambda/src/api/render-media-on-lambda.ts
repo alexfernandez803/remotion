@@ -7,6 +7,7 @@ import type {
 	ProResProfile,
 	VideoImageFormat,
 } from '@remotion/renderer';
+import type {RenderExpiryDays} from '../functions/helpers/lifecycle';
 import type {AwsRegion} from '../pricing/aws-regions';
 import {callLambda} from '../shared/call-lambda';
 import type {OutNameInput, Privacy} from '../shared/constants';
@@ -63,6 +64,7 @@ export type RenderMediaOnLambdaInput = {
 	 * @deprecated in favor of `logLevel`: true
 	 */
 	dumpBrowserLogs?: boolean;
+	renderFolderExpires: RenderExpiryDays;
 };
 
 export type RenderMediaOnLambdaOutput = {

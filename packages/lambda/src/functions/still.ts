@@ -79,6 +79,8 @@ const innerStillHandler = async ({
 		lambdaParams.bucketName ??
 			getOrCreateBucket({
 				region: getCurrentRegionInFunction(),
+				// apply only on bucket deployment
+				applyFileExpiry: false,
 			}).then((b) => b.bucketName),
 		getBrowserInstance(
 			lambdaParams.logLevel,
@@ -300,6 +302,8 @@ export const stillHandler = async (
 			(
 				await getOrCreateBucket({
 					region: getCurrentRegionInFunction(),
+					// apply only on bucket deployment
+					applyFileExpiry: false,
 				})
 			).bucketName;
 
