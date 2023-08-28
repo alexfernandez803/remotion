@@ -12,7 +12,7 @@ export type GetRenderProgressInput = {
 	renderId: string;
 	region: AwsRegion;
 	s3OutputProvider?: CustomCredentials;
-	renderFolderExpires: RenderExpiryDays;
+	renderFolderExpires?: RenderExpiryDays;
 };
 
 /**

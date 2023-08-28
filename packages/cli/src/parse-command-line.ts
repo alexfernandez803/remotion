@@ -35,6 +35,7 @@ type CommandLineOptions = {
 	['audio-bitrate']: string;
 	['video-bitrate']: string;
 	['audio-codec']: AudioCodec;
+
 	crf: number;
 	force: boolean;
 	output: string;
@@ -67,6 +68,7 @@ type CommandLineOptions = {
 	['browser']: string;
 	['browser-args']: string;
 	['user-agent']: string;
+	['render-folder-expires']: string;
 };
 
 export const BooleanFlags = [
@@ -247,6 +249,10 @@ export const parseCommandLine = () => {
 
 	if (typeof parsedCli['video-bitrate'] !== 'undefined') {
 		Config.setVideoBitrate(parsedCli['video-bitrate']);
+	}
+
+	if (typeof parsedCli['render-folder-expires'] !== 'undefined') {
+		Config.setVideoBitrate(parsedCli['render-folder-expires']);
 	}
 };
 

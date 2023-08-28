@@ -80,6 +80,7 @@ test('Should make a transparent video', async () => {
 			bucketName: res.bucketName,
 			renderId: res.renderId,
 			version: VERSION,
+			renderFolderExpires: null,
 		},
 		functionName: 'remotion-dev-render',
 		receivedStreamingPayload: () => undefined,
@@ -113,7 +114,7 @@ test('Should make a transparent video', async () => {
 		bucketName: progress.outBucket as string,
 		region: 'eu-central-1',
 		expectedBucketOwner: 'abc',
-		prefix: rendersPrefix(res.renderId),
+		prefix: rendersPrefix(res.renderId, null),
 	});
 
 	expect(files.length).toBe(4);
@@ -122,13 +123,14 @@ test('Should make a transparent video', async () => {
 		bucketName: progress.outBucket as string,
 		region: 'eu-central-1',
 		renderId: res.renderId,
+		renderFolderExpires: null,
 	});
 
 	const expectFiles = await lambdaLs({
 		bucketName: progress.outBucket as string,
 		region: 'eu-central-1',
 		expectedBucketOwner: 'abc',
-		prefix: rendersPrefix(res.renderId),
+		prefix: rendersPrefix(res.renderId, null),
 	});
 
 	RenderInternals.deleteDirectory(tmpdir);

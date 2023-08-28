@@ -64,7 +64,7 @@ export type RenderMediaOnLambdaInput = {
 	 * @deprecated in favor of `logLevel`: true
 	 */
 	dumpBrowserLogs?: boolean;
-	renderFolderExpires: RenderExpiryDays;
+	renderFolderExpires?: RenderExpiryDays | null;
 };
 
 export type RenderMediaOnLambdaOutput = {

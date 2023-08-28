@@ -305,6 +305,7 @@ const innerLaunchHandler = async (
 		everyNthFrame: params.everyNthFrame,
 		frameRange: realFrameRange,
 		audioCodec: params.audioCodec,
+		renderFolderExpires: params.renderFolderExpires,
 	};
 
 	const {key, renderBucketName, customCredentials} = getExpectedOutName(
@@ -344,7 +345,7 @@ const innerLaunchHandler = async (
 
 	await lambdaWriteFile({
 		bucketName: params.bucketName,
-		key: renderMetadataKey(params.renderId),
+		key: renderMetadataKey(params.renderId, params.renderFolderExpires),
 		body: JSON.stringify(renderMetadata),
 		region: getCurrentRegionInFunction(),
 		privacy: 'private',
@@ -376,7 +377,7 @@ const innerLaunchHandler = async (
 
 		lambdaWriteFile({
 			bucketName: params.bucketName,
-			key: encodingProgressKey(params.renderId),
+			key: encodingProgressKey(params.renderId, params.renderFolderExpires),
 			body: String(Math.round(framesEncoded / ENCODING_PROGRESS_STEP_SIZE)),
 			region: getCurrentRegionInFunction(),
 			privacy: 'private',
@@ -445,7 +446,7 @@ const innerLaunchHandler = async (
 		region: getCurrentRegionInFunction(),
 		expectedBucketOwner: options.expectedBucketOwner,
 		onErrors,
-		renderExpiryDays: params.renderFolderExpires,
+		renderFolderExpires: params.renderFolderExpires,
 	});
 	const encodingStart = Date.now();
 	const {outfile, cleanupChunksProm} = await concatVideosS3({
@@ -481,7 +482,7 @@ const innerLaunchHandler = async (
 	});
 	const finalEncodingProgressProm = lambdaWriteFile({
 		bucketName: params.bucketName,
-		key: encodingProgressKey(params.renderId),
+		key: encodingProgressKey(params.renderId, params.renderFolderExpires),
 		body: String(Math.ceil(frameCount.length / ENCODING_PROGRESS_STEP_SIZE)),
 		region: getCurrentRegionInFunction(),
 		privacy: 'private',
@@ -496,11 +497,13 @@ const innerLaunchHandler = async (
 		bucket: params.bucketName,
 		region: getCurrentRegionInFunction(),
 		expectedBucketOwner: options.expectedBucketOwner,
+		renderFolderExpires: params.renderFolderExpires,
 	});
 
 	const jobs = getFilesToDelete({
 		chunkCount,
 		renderId: params.renderId,
+		renderFolderExpires: params.renderFolderExpires,
 	});
 
 	const deletProm = verbose
@@ -557,10 +560,11 @@ const innerLaunchHandler = async (
 		postRenderData,
 		region: getCurrentRegionInFunction(),
 		renderId: params.renderId,
+		renderFolderExpires: params.renderFolderExpires,
 	});
 	await lambdaDeleteFile({
 		bucketName: params.bucketName,
-		key: initalizedMetadataKey(params.renderId),
+		key: initalizedMetadataKey(params.renderId, params.renderFolderExpires),
 		region: getCurrentRegionInFunction(),
 		customCredentials: null,
 	});

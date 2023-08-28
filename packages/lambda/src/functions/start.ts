@@ -53,7 +53,7 @@ export const startHandler = async (params: LambdaPayload, options: Options) => {
 		region,
 		body: 'Render was initialized',
 		expectedBucketOwner: options.expectedBucketOwner,
-		key: initalizedMetadataKey(renderId),
+		key: initalizedMetadataKey(renderId, params.renderFolderExpires),
 		privacy: 'private',
 		customCredentials: null,
 	});

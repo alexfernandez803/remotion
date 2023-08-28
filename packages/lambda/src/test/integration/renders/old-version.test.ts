@@ -60,6 +60,7 @@ test('Should fail when using an incompatible version', async () => {
 				bucketName: 'remotion-dev-render',
 				audioCodec: null,
 				renderId: 'test',
+				renderFolderExpires: null,
 			},
 			functionName: 'remotion-dev-render',
 			receivedStreamingPayload: () => undefined,

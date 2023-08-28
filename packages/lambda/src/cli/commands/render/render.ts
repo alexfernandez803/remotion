@@ -5,6 +5,7 @@ import {Internals} from 'remotion';
 import {downloadMedia} from '../../../api/download-media';
 import {getRenderProgress} from '../../../api/get-render-progress';
 import {renderMediaOnLambda} from '../../../api/render-media-on-lambda';
+import type {RenderExpiryDays} from '../../../functions/helpers/lifecycle';
 import type {EnhancedErrorInfo} from '../../../functions/helpers/write-lambda-error';
 import type {RenderProgress} from '../../../shared/constants';
 import {
@@ -143,6 +144,9 @@ export const renderCommand = async (args: string[], remotionRoot: string) => {
 	const framesPerLambda = parsedLambdaCli['frames-per-lambda'] ?? undefined;
 	validateFramesPerLambda({framesPerLambda, durationInFrames: 1});
 
+	const rawRenderFolder = parsedLambdaCli['render-folder-expires'] ?? null;
+	const renderExpiryValue = (rawRenderFolder as RenderExpiryDays) ?? null;
+
 	const res = await renderMediaOnLambda({
 		functionName,
 		serveUrl,
@@ -183,6 +187,7 @@ export const renderCommand = async (args: string[], remotionRoot: string) => {
 		rendererFunctionName: parsedLambdaCli['renderer-function-name'] ?? null,
 		forceBucketName: parsedLambdaCli['force-bucket-name'],
 		audioCodec: CliInternals.parsedCli['audio-codec'],
+		renderFolderExpires: renderExpiryValue,
 	});
 
 	const totalSteps = downloadName ? 6 : 5;
@@ -217,6 +222,7 @@ export const renderCommand = async (args: string[], remotionRoot: string) => {
 		bucketName: res.bucketName,
 		renderId: res.renderId,
 		region: getAwsRegion(),
+		renderFolderExpires: renderExpiryValue,
 	});
 	const multiProgress = makeMultiProgressFromStatus(status);
 	progressBar.update(
@@ -240,6 +246,7 @@ export const renderCommand = async (args: string[], remotionRoot: string) => {
 			bucketName: res.bucketName,
 			renderId: res.renderId,
 			region: getAwsRegion(),
+			renderFolderExpires: renderExpiryValue,
 		});
 		const newProgress = makeMultiProgressFromStatus(newStatus);
 		progressBar.update(
@@ -275,6 +282,7 @@ export const renderCommand = async (args: string[], remotionRoot: string) => {
 					outPath: downloadName,
 					region: getAwsRegion(),
 					renderId: res.renderId,
+					renderFolderExpires: renderExpiryValue,
 					onProgress: ({downloaded, totalSize}) => {
 						progressBar.update(
 							makeProgressString({

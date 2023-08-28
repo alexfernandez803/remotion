@@ -78,7 +78,7 @@ export const createBucket = async ({
 	if (applyFileExpiry) {
 		const lcRules = getLifeCycleRules();
 
-		// assume that we have an existing lifecyle rule so we delete previous
+		// assume that we have an existing lifecyle rule so we delete previous ones
 		const deleteCommandInput = deleteLifeCycleInput({bucketName, lcRules});
 		const deleteCommand = new DeleteBucketLifecycleCommand(deleteCommandInput);
 

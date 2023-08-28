@@ -235,6 +235,7 @@ const renderHandler = async (
 		key: chunkKeyForIndex({
 			renderId: params.renderId,
 			index: params.chunk,
+			renderFolderExpires: params.renderFolderExpires,
 		}),
 		body: fs.createReadStream(outputLocation),
 		region: getCurrentRegionInFunction(),
@@ -258,6 +259,7 @@ const renderHandler = async (
 				chunk: params.chunk,
 				rendered: endRendered,
 				start,
+				renderFolderExpires: params.renderFolderExpires,
 			}),
 			region: getCurrentRegionInFunction(),
 			privacy: 'private',

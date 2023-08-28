@@ -47,7 +47,7 @@ export type RenderStillOnLambdaInput = {
 	 */
 	dumpBrowserLogs?: boolean;
 	onInit?: (data: {renderId: string; cloudWatchLogs: string}) => void;
-	renderExpiryDays: RenderExpiryDays;
+	renderFolderExpires?: RenderExpiryDays | null;
 };
 
 export type RenderStillOnLambdaOutput = {
@@ -100,7 +100,7 @@ export const renderStillOnLambda = async ({
 	forceBucketName,
 	dumpBrowserLogs,
 	onInit,
-	renderExpiryDays,
+	renderFolderExpires,
 }: RenderStillOnLambdaInput): Promise<RenderStillOnLambdaOutput> => {
 	if (quality) {
 		throw new Error(
@@ -143,7 +143,7 @@ export const renderStillOnLambda = async ({
 				forceHeight: forceHeight ?? null,
 				forceWidth: forceWidth ?? null,
 				bucketName: forceBucketName ?? null,
-				renderExpiryDays,
+				renderFolderExpires,
 			},
 			region,
 			receivedStreamingPayload: (payload) => {

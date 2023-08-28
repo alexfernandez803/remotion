@@ -17,7 +17,7 @@ export const sitesRmallSubcommand = async () => {
 
 	const bucketName =
 		parsedLambdaCli['force-bucket-name'] ??
-		(await getOrCreateBucket({region})).bucketName;
+		(await getOrCreateBucket({region, applyFileExpiry: false})).bucketName;
 
 	for (const site of deployedSites.sites) {
 		if (

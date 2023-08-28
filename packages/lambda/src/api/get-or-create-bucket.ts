@@ -6,7 +6,7 @@ import {getRemotionS3Buckets} from './get-buckets';
 
 export type GetOrCreateBucketInput = {
 	region: AwsRegion;
-	applyFileExpiry: boolean;
+	applyFileExpiry?: boolean;
 };
 
 export type GetOrCreateBucketOutput = {

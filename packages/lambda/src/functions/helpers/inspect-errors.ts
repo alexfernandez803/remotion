@@ -10,6 +10,7 @@ import {
 	isBrowserCrashedError,
 	isErrInsufficientResourcesErr,
 } from './is-enosp-err';
+import type {RenderExpiryDays} from './lifecycle';
 import type {EnhancedErrorInfo, LambdaErrorInfo} from './write-lambda-error';
 
 const FAILED_TO_LAUNCH_TOKEN = 'Failed to launch browser.';
@@ -54,15 +55,19 @@ export const inspectErrors = async ({
 	region,
 	renderId,
 	expectedBucketOwner,
+	renderFolderExpires,
 }: {
 	contents: _Object[];
 	bucket: string;
 	region: AwsRegion;
 	renderId: string;
 	expectedBucketOwner: string;
+	renderFolderExpires?: RenderExpiryDays | null;
 }): Promise<EnhancedErrorInfo[]> => {
 	const errs = contents
-		.filter((c) => c.Key?.startsWith(getErrorKeyPrefix(renderId)))
+		.filter((c) =>
+			c.Key?.startsWith(getErrorKeyPrefix(renderId, renderFolderExpires))
+		)
 		.map((c) => c.Key)
 		.filter(Internals.truthy);
 

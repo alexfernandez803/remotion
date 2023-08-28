@@ -112,6 +112,10 @@ export const stillCommand = async (args: string[], remotionRoot: string) => {
 	const privacy = parsedLambdaCli.privacy ?? DEFAULT_OUTPUT_PRIVACY;
 	validatePrivacy(privacy, true);
 
+	// eslint-disable-next-line no-unused-expressions
+	CliInternals.parsedCli['render-folder-expires'] ?? null;
+	// const renderExpiryValue = rawRenderFolder as RenderExpiryDays;
+
 	const {format: imageFormat, source: imageFormatReason} =
 		CliInternals.determineFinalStillImageFormat({
 			downloadName,

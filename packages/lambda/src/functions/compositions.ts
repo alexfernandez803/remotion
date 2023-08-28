@@ -38,6 +38,8 @@ export const compositionsHandler = async (
 		lambdaParams.bucketName ??
 			getOrCreateBucket({
 				region,
+				/// do not recreate the LC rules while running
+				applyFileExpiry: false,
 			}).then((b) => b.bucketName),
 		getBrowserInstance(
 			lambdaParams.logLevel,

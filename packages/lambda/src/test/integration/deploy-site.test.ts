@@ -43,6 +43,7 @@ test("Should throw if bucket doesn't exist", () => {
 test('Should apply name if given', async () => {
 	const {bucketName} = await getOrCreateBucket({
 		region: 'ap-northeast-1',
+		applyFileExpiry: false,
 	});
 	expect(
 		await deploySite({

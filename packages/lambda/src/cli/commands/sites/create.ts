@@ -95,6 +95,7 @@ export const sitesCreateSubcommand = async (
 		(
 			await getOrCreateBucket({
 				region: getAwsRegion(),
+				applyFileExpiry: false,
 			})
 		).bucketName;
 

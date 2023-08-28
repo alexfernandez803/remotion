@@ -126,6 +126,7 @@ export const getCliOptions = async (options: {
 	const height = ConfigInternals.getHeight();
 	const width = ConfigInternals.getWidth();
 
+	// const concurrency = ConfigInternals.getConcurrency();
 	RenderInternals.validateConcurrency(concurrency, 'concurrency');
 
 	return {

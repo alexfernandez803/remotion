@@ -41,7 +41,9 @@ export const createPostRenderData = ({
 	outputFile: OutputFileMetadata;
 }): PostRenderData => {
 	const initializedKeys = contents.filter((c) =>
-		c.Key?.startsWith(lambdaTimingsPrefix(renderId))
+		c.Key?.startsWith(
+			lambdaTimingsPrefix(renderId, renderMetadata.renderFolderExpires)
+		)
 	);
 
 	const parsedTimings = initializedKeys.map(({Key}) =>
@@ -81,7 +83,11 @@ export const createPostRenderData = ({
 		.map((c) => c.Size ?? 0)
 		.reduce((a, b) => a + b, 0);
 
-	const retriesInfo = getRetryStats({contents, renderId});
+	const retriesInfo = getRetryStats({
+		contents,
+		renderId,
+		renderFolderExpires: renderMetadata.renderFolderExpires,
+	});
 
 	return {
 		cost: {
@@ -105,6 +111,7 @@ export const createPostRenderData = ({
 		filesCleanedUp: getFilesToDelete({
 			chunkCount: renderMetadata.totalChunks,
 			renderId,
+			renderFolderExpires: renderMetadata.renderFolderExpires,
 		}).length,
 		timeToEncode,
 		timeToCleanUp: timeToDelete,
@@ -112,6 +119,7 @@ export const createPostRenderData = ({
 			contents,
 			renderId,
 			type: 'absolute-time',
+			renderFolderExpires: renderMetadata.renderFolderExpires,
 		}),
 		retriesInfo,
 		mostExpensiveFrameRanges: getMostExpensiveChunks(
