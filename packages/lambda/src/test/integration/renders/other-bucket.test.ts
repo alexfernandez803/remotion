@@ -66,11 +66,8 @@ test('Should be able to render to another bucket', async () => {
 			rendererFunctionName: null,
 			bucketName: null,
 			audioCodec: null,
-<<<<<<< HEAD
 			renderFolderExpires: null,
-=======
 			offthreadVideoCacheSizeInBytes: null,
->>>>>>> main
 		},
 		functionName: 'remotion-dev-render',
 		receivedStreamingPayload: () => undefined,

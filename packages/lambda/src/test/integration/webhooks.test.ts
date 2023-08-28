@@ -22,7 +22,7 @@ beforeEach(() => {
 		(
 			_url: string,
 			_options: unknown,
-			cb: (a: {statusCode: number}) => void,
+			cb: (a: {statusCode: number}) => void
 		) => {
 			cb({
 				statusCode: 201,
@@ -31,7 +31,7 @@ beforeEach(() => {
 				on: () => undefined,
 				end: () => undefined,
 			};
-		},
+		}
 	);
 });
 
@@ -105,11 +105,8 @@ describe('Webhooks', () => {
 				rendererFunctionName: null,
 				bucketName: null,
 				audioCodec: null,
-<<<<<<< HEAD
 				renderFolderExpires: null,
-=======
 				offthreadVideoCacheSizeInBytes: null,
->>>>>>> main
 			},
 			functionName: 'remotion-dev-lambda',
 			receivedStreamingPayload: () => undefined,
@@ -148,7 +145,7 @@ describe('Webhooks', () => {
 				},
 				timeout: 5000,
 			},
-			expect.anything(),
+			expect.anything()
 		);
 	});
 
@@ -230,7 +227,7 @@ describe('Webhooks', () => {
 				},
 				timeout: 5000,
 			},
-			expect.anything(),
+			expect.anything()
 		);
 	});
 });

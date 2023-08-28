@@ -98,10 +98,7 @@ export const lambdaChunkInitializedKey = ({
 }) =>
 	`${lambdaChunkInitializedPrefix(
 		renderId,
-<<<<<<< HEAD
 		renderFolderExpires
-=======
->>>>>>> main
 	)}-chunk:${chunk}-attempt:${attempt}.txt`;
 export const lambdaTimingsPrefix = (
 	renderId: string,
@@ -121,19 +118,11 @@ export const lambdaLogsPrefix = (
 	chunk: number,
 	startFrame: number,
 	endFrame: number,
-<<<<<<< HEAD
 	renderFolderExpires?: RenderExpiryDays | null
 ) =>
 	`${rendersPrefix(renderId, renderFolderExpires)}/logs/chunk:${String(
 		chunk
 	).padStart(8, '0')}:frames:${startFrame}-${endFrame}.json`;
-=======
-) =>
-	`${rendersPrefix(renderId)}/logs/chunk:${String(chunk).padStart(
-		8,
-		'0',
-	)}:frames:${startFrame}-${endFrame}.json`;
->>>>>>> main
 
 export const lambdaTimingsKey = ({
 	renderId,
@@ -151,10 +140,7 @@ export const lambdaTimingsKey = ({
 	`${lambdaTimingsPrefixForChunk(
 		renderId,
 		chunk,
-<<<<<<< HEAD
 		renderFolderExpires
-=======
->>>>>>> main
 	)}-start:${start}-rendered:${rendered}.txt`;
 export const chunkKey = (
 	renderId: string,
@@ -233,10 +219,7 @@ export const customOutName = (
 	renderId: string,
 	bucketName: string,
 	name: OutNameInput,
-<<<<<<< HEAD
 	renderFolderExpires?: RenderExpiryDays | null
-=======
->>>>>>> main
 ): OutNameOutput => {
 	if (typeof name === 'string') {
 		return {
@@ -351,11 +334,8 @@ export type LambdaStartPayload = {
 	forceHeight: number | null;
 	forceWidth: number | null;
 	bucketName: string | null;
-<<<<<<< HEAD
-	renderFolderExpires?: RenderExpiryDays | null;
-=======
+	renderFolderExpires: RenderExpiryDays | null;
 	offthreadVideoCacheSizeInBytes: number | null;
->>>>>>> main
 };
 
 export type LambdaStatusPayload = {
@@ -409,11 +389,8 @@ export type LambdaPayloads = {
 		webhook: WebhookOption;
 		forceHeight: number | null;
 		forceWidth: number | null;
-<<<<<<< HEAD
-		renderFolderExpires?: RenderExpiryDays | null;
-=======
+		renderFolderExpires: RenderExpiryDays | null;
 		offthreadVideoCacheSizeInBytes: number | null;
->>>>>>> main
 	};
 	status: LambdaStatusPayload;
 	renderer: {
@@ -453,11 +430,8 @@ export type LambdaPayloads = {
 		launchFunctionConfig: {
 			version: string;
 		};
-<<<<<<< HEAD
-		renderFolderExpires?: RenderExpiryDays | null;
-=======
+		renderFolderExpires: RenderExpiryDays | null;
 		offthreadVideoCacheSizeInBytes: number | null;
->>>>>>> main
 	};
 	still: {
 		type: LambdaRoutines.still;
@@ -481,11 +455,8 @@ export type LambdaPayloads = {
 		forceHeight: number | null;
 		forceWidth: number | null;
 		bucketName: string | null;
-<<<<<<< HEAD
 		renderFolderExpires?: RenderExpiryDays | null;
-=======
 		offthreadVideoCacheSizeInBytes: number | null;
->>>>>>> main
 	};
 	compositions: {
 		type: LambdaRoutines.compositions;

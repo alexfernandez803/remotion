@@ -8,7 +8,6 @@ export const checkIfRenderExists = (
 	renderId: string,
 	bucketName: string,
 	region: AwsRegion,
-<<<<<<< HEAD
 	renderFolderExpires?: RenderExpiryDays | null
 	// eslint-disable-next-line max-params
 ) => {
@@ -18,18 +17,11 @@ export const checkIfRenderExists = (
 				initalizedMetadataKey(renderId, renderFolderExpires)
 			);
 		})
-=======
-) => {
-	const initializedExists = Boolean(
-		contents.find((c) => {
-			return c.Key?.startsWith(initalizedMetadataKey(renderId));
-		}),
->>>>>>> main
 	);
 
 	if (!initializedExists) {
 		throw new TypeError(
-			`No render with ID "${renderId}" found in bucket ${bucketName} and region ${region}`,
+			`No render with ID "${renderId}" found in bucket ${bucketName} and region ${region}`
 		);
 	}
 };

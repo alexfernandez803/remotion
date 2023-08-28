@@ -50,12 +50,8 @@ export type RenderStillOnLambdaInput = {
 	 */
 	dumpBrowserLogs?: boolean;
 	onInit?: (data: {renderId: string; cloudWatchLogs: string}) => void;
-<<<<<<< HEAD
-	renderFolderExpires?: RenderExpiryDays | null;
-};
-=======
+	renderFolderExpires: RenderExpiryDays | null;
 } & Partial<ToOptions<typeof BrowserSafeApis.optionsMap.renderMediaOnLambda>>;
->>>>>>> main
 
 export type RenderStillOnLambdaOutput = {
 	estimatedPrice: CostsInfo;
@@ -90,15 +86,12 @@ const renderStillOnLambdaRaw = async ({
 	forceBucketName,
 	dumpBrowserLogs,
 	onInit,
-<<<<<<< HEAD
 	renderFolderExpires,
-=======
 	offthreadVideoCacheSizeInBytes,
->>>>>>> main
 }: RenderStillOnLambdaInput): Promise<RenderStillOnLambdaOutput> => {
 	if (quality) {
 		throw new Error(
-			'The `quality` option is deprecated. Use `jpegQuality` instead.',
+			'The `quality` option is deprecated. Use `jpegQuality` instead.'
 		);
 	}
 
@@ -137,11 +130,8 @@ const renderStillOnLambdaRaw = async ({
 				forceHeight: forceHeight ?? null,
 				forceWidth: forceWidth ?? null,
 				bucketName: forceBucketName ?? null,
-<<<<<<< HEAD
 				renderFolderExpires,
-=======
 				offthreadVideoCacheSizeInBytes: offthreadVideoCacheSizeInBytes ?? null,
->>>>>>> main
 			},
 			region,
 			receivedStreamingPayload: (payload) => {
@@ -179,7 +169,7 @@ const renderStillOnLambdaRaw = async ({
 	} catch (err) {
 		if ((err as Error).stack?.includes('UnrecognizedClientException')) {
 			throw new Error(
-				'UnrecognizedClientException: The AWS credentials provided were probably mixed up. Learn how to fix this issue here: https://remotion.dev/docs/lambda/troubleshooting/unrecognizedclientexception',
+				'UnrecognizedClientException: The AWS credentials provided were probably mixed up. Learn how to fix this issue here: https://remotion.dev/docs/lambda/troubleshooting/unrecognizedclientexception'
 			);
 		}
 
@@ -204,5 +194,5 @@ const renderStillOnLambdaRaw = async ({
  * @returns {Promise<RenderStillOnLambdaOutput>} See documentation for exact response structure.
  */
 export const renderStillOnLambda = PureJSAPIs.wrapWithErrorHandling(
-	renderStillOnLambdaRaw,
+	renderStillOnLambdaRaw
 ) as typeof renderStillOnLambdaRaw;

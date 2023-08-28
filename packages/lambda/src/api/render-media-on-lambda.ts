@@ -5,16 +5,12 @@ import type {
 	LogLevel,
 	PixelFormat,
 	ProResProfile,
-	ToOptions,
 	VideoImageFormat,
 	X264Preset,
 } from '@remotion/renderer';
-<<<<<<< HEAD
-import type {RenderExpiryDays} from '../functions/helpers/lifecycle';
-=======
-import type {BrowserSafeApis} from '@remotion/renderer/client';
+
 import {PureJSAPIs} from '@remotion/renderer/pure';
->>>>>>> main
+import type {RenderExpiryDays} from '../functions/helpers/lifecycle';
 import type {AwsRegion} from '../pricing/aws-regions';
 import {callLambda} from '../shared/call-lambda';
 import type {OutNameInput, Privacy, WebhookOption} from '../shared/constants';
@@ -69,12 +65,8 @@ export type RenderMediaOnLambdaInput = {
 	 * @deprecated in favor of `logLevel`: true
 	 */
 	dumpBrowserLogs?: boolean;
-<<<<<<< HEAD
-	renderFolderExpires?: RenderExpiryDays | null;
+	renderFolderExpires: RenderExpiryDays | null;
 };
-=======
-} & Partial<ToOptions<typeof BrowserSafeApis.optionsMap.renderMediaOnLambda>>;
->>>>>>> main
 
 export type RenderMediaOnLambdaOutput = {
 	renderId: string;
@@ -84,7 +76,7 @@ export type RenderMediaOnLambdaOutput = {
 };
 
 const renderMediaOnLambdaRaw = async (
-	input: RenderMediaOnLambdaInput,
+	input: RenderMediaOnLambdaInput
 ): Promise<RenderMediaOnLambdaOutput> => {
 	const {functionName, region, rendererFunctionName} = input;
 
@@ -118,7 +110,7 @@ const renderMediaOnLambdaRaw = async (
 	} catch (err) {
 		if ((err as Error).stack?.includes('UnrecognizedClientException')) {
 			throw new Error(
-				'UnrecognizedClientException: The AWS credentials provided were probably mixed up. Learn how to fix this issue here: https://remotion.dev/docs/lambda/troubleshooting/unrecognizedclientexception',
+				'UnrecognizedClientException: The AWS credentials provided were probably mixed up. Learn how to fix this issue here: https://remotion.dev/docs/lambda/troubleshooting/unrecognizedclientexception'
 			);
 		}
 
@@ -146,7 +138,7 @@ const renderMediaOnLambdaRaw = async (
  * @returns {Promise<RenderMediaOnLambdaOutput>} See documentation for detailed structure
  */
 export const renderMediaOnLambda = PureJSAPIs.wrapWithErrorHandling(
-	renderMediaOnLambdaRaw,
+	renderMediaOnLambdaRaw
 ) as typeof renderMediaOnLambdaRaw;
 
 /**
