@@ -28,6 +28,7 @@ export const estimatePriceFromBucket = ({
 	}
 
 	const parsedTimings = contents
+<<<<<<< HEAD
 		.filter((c) =>
 			c.Key?.startsWith(
 				lambdaTimingsPrefix(
@@ -35,6 +36,10 @@ export const estimatePriceFromBucket = ({
 					renderMetadata.renderFolderExpires
 				)
 			)
+=======
+		.filter(
+			(c) => c.Key?.startsWith(lambdaTimingsPrefix(renderMetadata.renderId)),
+>>>>>>> main
 		)
 		.map((f) => parseLambdaTimingsKey(f.Key as string));
 
@@ -50,7 +55,7 @@ export const estimatePriceFromBucket = ({
 
 	const unfinished = Math.max(
 		0,
-		(renderMetadata?.totalChunks ?? 0) - parsedTimings.length
+		(renderMetadata?.totalChunks ?? 0) - parsedTimings.length,
 	);
 	const timeElapsedOfUnfinished = new Array(unfinished)
 		.fill(true)
@@ -60,7 +65,7 @@ export const estimatePriceFromBucket = ({
 	const accruedSoFar = Number(
 		estimatePrice({
 			region: getCurrentRegionInFunction(),
-			durationInMiliseconds:
+			durationInMilliseconds:
 				calculateChunkTimes({
 					contents,
 					renderId: renderMetadata.renderId,
@@ -70,7 +75,7 @@ export const estimatePriceFromBucket = ({
 			memorySizeInMb,
 			diskSizeInMb,
 			lambdasInvoked,
-		}).toPrecision(5)
+		}).toPrecision(5),
 	);
 	return accruedSoFar;
 };

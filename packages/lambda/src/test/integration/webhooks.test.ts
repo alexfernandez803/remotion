@@ -22,7 +22,7 @@ beforeEach(() => {
 		(
 			_url: string,
 			_options: unknown,
-			cb: (a: {statusCode: number}) => void
+			cb: (a: {statusCode: number}) => void,
 		) => {
 			cb({
 				statusCode: 201,
@@ -31,7 +31,7 @@ beforeEach(() => {
 				on: () => undefined,
 				end: () => undefined,
 			};
-		}
+		},
 	);
 });
 
@@ -78,6 +78,7 @@ describe('Webhooks', () => {
 				pixelFormat: 'yuv420p',
 				privacy: 'public',
 				proResProfile: undefined,
+				x264Preset: null,
 				jpegQuality: undefined,
 				scale: 1,
 				timeoutInMilliseconds: 40000,
@@ -93,6 +94,9 @@ describe('Webhooks', () => {
 				webhook: {
 					url: TEST_URL,
 					secret: 'TEST_SECRET',
+					customData: {
+						customID: 123,
+					},
 				},
 				audioBitrate: null,
 				videoBitrate: null,
@@ -101,7 +105,11 @@ describe('Webhooks', () => {
 				rendererFunctionName: null,
 				bucketName: null,
 				audioCodec: null,
+<<<<<<< HEAD
 				renderFolderExpires: null,
+=======
+				offthreadVideoCacheSizeInBytes: null,
+>>>>>>> main
 			},
 			functionName: 'remotion-dev-lambda',
 			receivedStreamingPayload: () => undefined,
@@ -140,7 +148,7 @@ describe('Webhooks', () => {
 				},
 				timeout: 5000,
 			},
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -153,6 +161,7 @@ describe('Webhooks', () => {
 			region: 'us-east-1',
 			type: LambdaRoutines.launch,
 			payload: {
+				offthreadVideoCacheSizeInBytes: null,
 				serveUrl:
 					'https://64d3734a6bb69052c34d3616--spiffy-kelpie-71657b.netlify.app/',
 				chromiumOptions: {},
@@ -173,6 +182,7 @@ describe('Webhooks', () => {
 				pixelFormat: 'yuv420p',
 				privacy: 'public',
 				proResProfile: undefined,
+				x264Preset: null,
 				jpegQuality: undefined,
 				scale: 1,
 				timeoutInMilliseconds: 3000,
@@ -184,7 +194,11 @@ describe('Webhooks', () => {
 				},
 				muted: false,
 				overwrite: true,
-				webhook: {url: TEST_URL, secret: 'TEST_SECRET'},
+				webhook: {
+					url: TEST_URL,
+					secret: 'TEST_SECRET',
+					customData: {customID: 123},
+				},
 				audioBitrate: null,
 				videoBitrate: null,
 				bucketName: 'abc',
@@ -212,11 +226,11 @@ describe('Webhooks', () => {
 					'X-Remotion-Mode': 'production',
 					'X-Remotion-Signature': expect.stringContaining('sha512='),
 					'X-Remotion-Status': 'timeout',
-					'Content-Length': 54,
+					'Content-Length': 84,
 				},
 				timeout: 5000,
 			},
-			expect.anything()
+			expect.anything(),
 		);
 	});
 });

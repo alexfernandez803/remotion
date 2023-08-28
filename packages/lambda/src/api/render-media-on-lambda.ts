@@ -5,12 +5,19 @@ import type {
 	LogLevel,
 	PixelFormat,
 	ProResProfile,
+	ToOptions,
 	VideoImageFormat,
+	X264Preset,
 } from '@remotion/renderer';
+<<<<<<< HEAD
 import type {RenderExpiryDays} from '../functions/helpers/lifecycle';
+=======
+import type {BrowserSafeApis} from '@remotion/renderer/client';
+import {PureJSAPIs} from '@remotion/renderer/pure';
+>>>>>>> main
 import type {AwsRegion} from '../pricing/aws-regions';
 import {callLambda} from '../shared/call-lambda';
-import type {OutNameInput, Privacy} from '../shared/constants';
+import type {OutNameInput, Privacy, WebhookOption} from '../shared/constants';
 import {LambdaRoutines} from '../shared/constants';
 import type {DownloadBehavior} from '../shared/content-disposition-header';
 import {getCloudwatchRendererUrl, getS3RenderUrl} from '../shared/get-aws-urls';
@@ -29,6 +36,7 @@ export type RenderMediaOnLambdaInput = {
 	envVariables?: Record<string, string>;
 	pixelFormat?: PixelFormat;
 	proResProfile?: ProResProfile;
+	x264Preset?: X264Preset;
 	privacy?: Privacy;
 	/**
 	 * @deprecated Renamed to `jpegQuality`
@@ -51,10 +59,7 @@ export type RenderMediaOnLambdaInput = {
 	overwrite?: boolean;
 	audioBitrate?: string | null;
 	videoBitrate?: string | null;
-	webhook?: {
-		url: string;
-		secret: string | null;
-	};
+	webhook?: WebhookOption | null;
 	forceWidth?: number | null;
 	forceHeight?: number | null;
 	rendererFunctionName?: string | null;
@@ -64,14 +69,61 @@ export type RenderMediaOnLambdaInput = {
 	 * @deprecated in favor of `logLevel`: true
 	 */
 	dumpBrowserLogs?: boolean;
+<<<<<<< HEAD
 	renderFolderExpires?: RenderExpiryDays | null;
 };
+=======
+} & Partial<ToOptions<typeof BrowserSafeApis.optionsMap.renderMediaOnLambda>>;
+>>>>>>> main
 
 export type RenderMediaOnLambdaOutput = {
 	renderId: string;
 	bucketName: string;
 	cloudWatchLogs: string;
 	folderInS3Console: string;
+};
+
+const renderMediaOnLambdaRaw = async (
+	input: RenderMediaOnLambdaInput,
+): Promise<RenderMediaOnLambdaOutput> => {
+	const {functionName, region, rendererFunctionName} = input;
+
+	try {
+		const res = await callLambda({
+			functionName,
+			type: LambdaRoutines.start,
+			payload: await makeLambdaRenderMediaPayload(input),
+			region,
+			receivedStreamingPayload: () => undefined,
+			timeoutInTest: 120000,
+			retriesRemaining: 0,
+		});
+
+		return {
+			renderId: res.renderId,
+			bucketName: res.bucketName,
+			cloudWatchLogs: getCloudwatchRendererUrl({
+				functionName,
+				region,
+				renderId: res.renderId,
+				rendererFunctionName: rendererFunctionName ?? null,
+				chunk: null,
+			}),
+			folderInS3Console: getS3RenderUrl({
+				bucketName: res.bucketName,
+				renderId: res.renderId,
+				region,
+			}),
+		};
+	} catch (err) {
+		if ((err as Error).stack?.includes('UnrecognizedClientException')) {
+			throw new Error(
+				'UnrecognizedClientException: The AWS credentials provided were probably mixed up. Learn how to fix this issue here: https://remotion.dev/docs/lambda/troubleshooting/unrecognizedclientexception',
+			);
+		}
+
+		throw err;
+	}
 };
 
 /**
@@ -93,48 +145,9 @@ export type RenderMediaOnLambdaOutput = {
  * @param params.webhook Configuration for webhook called upon completion or timeout of the render.
  * @returns {Promise<RenderMediaOnLambdaOutput>} See documentation for detailed structure
  */
-
-export const renderMediaOnLambda = async (
-	input: RenderMediaOnLambdaInput
-): Promise<RenderMediaOnLambdaOutput> => {
-	const {functionName, region, rendererFunctionName} = input;
-
-	try {
-		const res = await callLambda({
-			functionName,
-			type: LambdaRoutines.start,
-			payload: await makeLambdaRenderMediaPayload(input),
-			region,
-			receivedStreamingPayload: () => undefined,
-			timeoutInTest: 120000,
-			retriesRemaining: 0,
-		});
-		return {
-			renderId: res.renderId,
-			bucketName: res.bucketName,
-			cloudWatchLogs: getCloudwatchRendererUrl({
-				functionName,
-				region,
-				renderId: res.renderId,
-				rendererFunctionName: rendererFunctionName ?? null,
-				chunk: null,
-			}),
-			folderInS3Console: getS3RenderUrl({
-				bucketName: res.bucketName,
-				renderId: res.renderId,
-				region,
-			}),
-		};
-	} catch (err) {
-		if ((err as Error).stack?.includes('UnrecognizedClientException')) {
-			throw new Error(
-				'UnrecognizedClientException: The AWS credentials provided were probably mixed up. Learn how to fix this issue here: https://remotion.dev/docs/lambda/troubleshooting/unrecognizedclientexception'
-			);
-		}
-
-		throw err;
-	}
-};
+export const renderMediaOnLambda = PureJSAPIs.wrapWithErrorHandling(
+	renderMediaOnLambdaRaw,
+) as typeof renderMediaOnLambdaRaw;
 
 /**
  * @deprecated Renamed to renderMediaOnLambda()

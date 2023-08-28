@@ -8,8 +8,10 @@ import type {
 	ProResProfile,
 	StillImageFormat,
 	VideoImageFormat,
+	X264Preset,
 } from '@remotion/renderer';
 import {RenderInternals} from '@remotion/renderer';
+import type {BrowserSafeApis} from '@remotion/renderer/client';
 import minimist from 'minimist';
 import {Config, ConfigInternals} from './config';
 import {Log} from './log';
@@ -19,6 +21,7 @@ type CommandLineOptions = {
 	['pixel-format']: PixelFormat;
 	['image-format']: VideoImageFormat | StillImageFormat;
 	['prores-profile']: ProResProfile;
+	['x264-preset']: X264Preset;
 	['bundle-cache']: string;
 	['env-file']: string;
 	['ignore-certificate-errors']: string;
@@ -26,6 +29,8 @@ type CommandLineOptions = {
 	['every-nth-frame']: number;
 	['number-of-gif-loops']: number;
 	['number-of-shared-audio-tags']: number;
+	[BrowserSafeApis.options.offthreadVideoCacheSizeInBytesOption
+		.cliFlag]: typeof BrowserSafeApis.options.offthreadVideoCacheSizeInBytesOption.type;
 	version: string;
 	codec: Codec;
 	concurrency: number;
@@ -200,6 +205,10 @@ export const parseCommandLine = () => {
 		);
 	}
 
+	if (parsedCli['x264-preset']) {
+		Config.setX264Preset(String(parsedCli['x264-preset']) as X264Preset);
+	}
+
 	if (parsedCli.overwrite) {
 		Config.setOverwriteOutput(parsedCli.overwrite);
 	}
@@ -252,7 +261,13 @@ export const parseCommandLine = () => {
 	}
 
 	if (typeof parsedCli['render-folder-expires'] !== 'undefined') {
-		Config.setVideoBitrate(parsedCli['render-folder-expires']);
+		// Config.setVideoBitrate(parsedCli['render-folder-expires']);
+	}
+
+	if (typeof parsedCli['offthreadvideo-cache-size-in-bytes'] !== 'undefined') {
+		Config.setOffthreadVideoCacheSizeInBytes(
+			parsedCli['offthreadvideo-cache-size-in-bytes']
+		);
 	}
 };
 

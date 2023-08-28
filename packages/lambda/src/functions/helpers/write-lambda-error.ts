@@ -21,7 +21,7 @@ export type LambdaErrorInfo = {
 };
 
 export const getTmpDirStateIfENoSp = (
-	err: string
+	err: string,
 ): LambdaErrorInfo['tmpDir'] => {
 	if (!errorIsOutOfSpaceError(err)) {
 		return null;

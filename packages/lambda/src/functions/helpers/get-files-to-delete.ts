@@ -24,8 +24,12 @@ export const getFilesToDelete = ({
 		chunkKeyForIndex({
 			index: i,
 			renderId,
+<<<<<<< HEAD
 			renderFolderExpires,
 		})
+=======
+		}),
+>>>>>>> main
 	);
 	const lambdaTimings = new Array(chunkCount)
 		.fill(true)

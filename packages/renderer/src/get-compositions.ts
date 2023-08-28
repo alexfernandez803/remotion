@@ -10,12 +10,15 @@ import {getPageAndCleanupFn} from './get-browser-instance';
 import {type LogLevel} from './log-level';
 import {getLogLevel} from './logger';
 import type {ChromiumOptions} from './open-browser';
+import type {ToOptions} from './options/option';
+import type {optionsMap} from './options/options-map';
 import type {RemotionServer} from './prepare-server';
 import {makeOrReuseServer} from './prepare-server';
 import {puppeteerEvaluateWithCatch} from './puppeteer-evaluate';
 import {waitForReady} from './seek-to-frame';
 import {setPropsAndEnv} from './set-props-and-env';
 import {validatePuppeteerTimeout} from './validate-puppeteer-timeout';
+import {wrapWithErrorHandling} from './wrap-with-error-handling';
 
 type InternalGetCompositionsOptions = {
 	serializedInputPropsWithCustomSchema: string;
@@ -30,7 +33,7 @@ type InternalGetCompositionsOptions = {
 	indent: boolean;
 	logLevel: LogLevel;
 	serveUrlOrWebpackUrl: string;
-};
+} & ToOptions<typeof optionsMap.getCompositions>;
 
 export type GetCompositionsOptions = {
 	inputProps?: Record<string, unknown> | null;
@@ -42,6 +45,7 @@ export type GetCompositionsOptions = {
 	chromiumOptions?: ChromiumOptions;
 	port?: number | null;
 	logLevel?: LogLevel;
+	offthreadVideoCacheSizeInBytes?: number | null;
 };
 
 type InnerGetCompositionsParams = {
@@ -129,10 +133,10 @@ const innerGetCompositions = async ({
 			fps,
 			durationInFrames,
 			props: Internals.deserializeJSONWithCustomFields(
-				r.serializedResolvedPropsWithCustomSchema
+				r.serializedResolvedPropsWithCustomSchema,
 			),
 			defaultProps: Internals.deserializeJSONWithCustomFields(
-				r.serializedDefaultPropsWithCustomSchema
+				r.serializedDefaultPropsWithCustomSchema,
 			),
 		};
 	});
@@ -140,7 +144,7 @@ const innerGetCompositions = async ({
 
 type CleanupFn = () => void;
 
-export const internalGetCompositions = async ({
+const internalGetCompositionsRaw = async ({
 	browserExecutable,
 	chromiumOptions,
 	envVariables,
@@ -153,6 +157,7 @@ export const internalGetCompositions = async ({
 	server,
 	timeoutInMilliseconds,
 	logLevel,
+	offthreadVideoCacheSizeInBytes,
 }: InternalGetCompositionsOptions) => {
 	const {page, cleanup: cleanupPage} = await getPageAndCleanupFn({
 		passedInInstance: puppeteerInstance,
@@ -174,7 +179,7 @@ export const internalGetCompositions = async ({
 				page,
 				frame: null,
 				onError,
-			})
+			}),
 		);
 
 		makeOrReuseServer(
@@ -186,11 +191,12 @@ export const internalGetCompositions = async ({
 				concurrency: 1,
 				logLevel,
 				indent,
+				offthreadVideoCacheSizeInBytes,
 			},
 			{
 				onDownload: () => undefined,
 				onError,
-			}
+			},
 		)
 			.then(({server: {serveUrl, offthreadPort, sourceMap}, cleanupServer}) => {
 				page.setBrowserSourceMapContext(sourceMap);
@@ -224,13 +230,17 @@ export const internalGetCompositions = async ({
 	});
 };
 
+export const internalGetCompositions = wrapWithErrorHandling(
+	internalGetCompositionsRaw,
+);
+
 /**
  * @description Gets the compositions defined in a Remotion project based on a Webpack bundle.
  * @see [Documentation](https://www.remotion.dev/docs/renderer/get-compositions)
  */
 export const getCompositions = (
 	serveUrlOrWebpackUrl: string,
-	config?: GetCompositionsOptions
+	config?: GetCompositionsOptions,
 ): Promise<VideoConfig[]> => {
 	const {
 		browserExecutable,
@@ -260,5 +270,7 @@ export const getCompositions = (
 		server: undefined,
 		timeoutInMilliseconds: timeoutInMilliseconds ?? DEFAULT_TIMEOUT,
 		logLevel: logLevel ?? getLogLevel(),
+		offthreadVideoCacheSizeInBytes:
+			config?.offthreadVideoCacheSizeInBytes ?? null,
 	});
 };

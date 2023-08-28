@@ -69,7 +69,6 @@ export const SharedPlayerContexts: React.FC<{
 			unregisterComposition: () => undefined,
 			unregisterSequence: () => undefined,
 			registerRenderAsset: () => undefined,
-			unregisterAsset: () => undefined,
 			currentCompositionMetadata: null,
 			setCurrentCompositionMetadata: () => undefined,
 			assets: [],
@@ -87,7 +86,7 @@ export const SharedPlayerContexts: React.FC<{
 
 	const [mediaMuted, setMediaMuted] = useState<boolean>(() => initiallyMuted);
 	const [mediaVolume, setMediaVolume] = useState<number>(() =>
-		getPreferredVolume()
+		getPreferredVolume(),
 	);
 
 	const mediaVolumeContextValue = useMemo((): MediaVolumeContextValue => {

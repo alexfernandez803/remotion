@@ -10,6 +10,7 @@ import {validateDownloadBehavior} from '../shared/validate-download-behavior';
 import {validateFramesPerLambda} from '../shared/validate-frames-per-lambda';
 import {validateLambdaCodec} from '../shared/validate-lambda-codec';
 import {validateServeUrl} from '../shared/validate-serveurl';
+import {validateWebhook} from '../shared/validate-webhook';
 import type {GetRenderProgressInput} from './get-render-progress';
 import type {RenderMediaOnLambdaInput} from './render-media-on-lambda';
 
@@ -28,6 +29,7 @@ export const makeLambdaRenderMediaPayload = async ({
 	envVariables,
 	pixelFormat,
 	proResProfile,
+	x264Preset,
 	maxRetries,
 	privacy,
 	logLevel,
@@ -50,11 +52,15 @@ export const makeLambdaRenderMediaPayload = async ({
 	dumpBrowserLogs,
 	jpegQuality,
 	quality,
+<<<<<<< HEAD
 	renderFolderExpires,
+=======
+	offthreadVideoCacheSizeInBytes,
+>>>>>>> main
 }: RenderMediaOnLambdaInput): Promise<LambdaStartPayload> => {
 	if (quality) {
 		throw new Error(
-			'quality has been renamed to jpegQuality. Please rename the option.'
+			'quality has been renamed to jpegQuality. Please rename the option.',
 		);
 	}
 
@@ -65,10 +71,11 @@ export const makeLambdaRenderMediaPayload = async ({
 		durationInFrames: 1,
 	});
 	validateDownloadBehavior(downloadBehavior);
+	validateWebhook(webhook);
 
 	const stringifiedInputProps = serializeOrThrow(
 		inputProps ?? {},
-		'input-props'
+		'input-props',
 	);
 
 	const serialized = await compressInputProps({
@@ -92,6 +99,7 @@ export const makeLambdaRenderMediaPayload = async ({
 		envVariables,
 		pixelFormat,
 		proResProfile,
+		x264Preset: x264Preset ?? null,
 		jpegQuality,
 		maxRetries: maxRetries ?? 1,
 		privacy: privacy ?? 'public',
@@ -116,7 +124,11 @@ export const makeLambdaRenderMediaPayload = async ({
 		bucketName: bucketName ?? null,
 		audioCodec: audioCodec ?? null,
 		type: LambdaRoutines.start,
+<<<<<<< HEAD
 		renderFolderExpires,
+=======
+		offthreadVideoCacheSizeInBytes: offthreadVideoCacheSizeInBytes ?? null,
+>>>>>>> main
 	};
 };
 

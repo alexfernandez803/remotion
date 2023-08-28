@@ -37,7 +37,7 @@ export type DownloadMediaOutput = {
  */
 
 export const downloadMedia = async (
-	input: DownloadMediaInput
+	input: DownloadMediaInput,
 ): Promise<DownloadMediaOutput> => {
 	const expectedBucketOwner = await getAccountId({
 		region: input.region,
@@ -56,7 +56,7 @@ export const downloadMedia = async (
 	const {key, renderBucketName, customCredentials} = getExpectedOutName(
 		renderMetadata,
 		input.bucketName,
-		input.customCredentials ?? null
+		input.customCredentials ?? null,
 	);
 
 	const {sizeInBytes} = await lambdaDownloadFileWithProgress({

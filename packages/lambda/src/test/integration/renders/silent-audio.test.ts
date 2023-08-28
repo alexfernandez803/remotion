@@ -41,6 +41,7 @@ test('Should add silent audio if there is no audio', async () => {
 			pixelFormat: 'yuv420p',
 			privacy: 'public',
 			proResProfile: undefined,
+			x264Preset: null,
 			jpegQuality: undefined,
 			scale: 1,
 			timeoutInMilliseconds: 12000,
@@ -61,7 +62,11 @@ test('Should add silent audio if there is no audio', async () => {
 			rendererFunctionName: null,
 			bucketName: null,
 			audioCodec: null,
+<<<<<<< HEAD
 			renderFolderExpires: null,
+=======
+			offthreadVideoCacheSizeInBytes: null,
+>>>>>>> main
 		},
 		functionName: 'remotion-dev-render',
 		receivedStreamingPayload: () => undefined,

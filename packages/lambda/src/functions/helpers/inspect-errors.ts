@@ -85,7 +85,7 @@ export const inspectErrors = async ({
 			});
 			const errorLog = await streamToString(Body);
 			return errorLog;
-		})
+		}),
 	);
 	return errors.map((e, index): EnhancedErrorInfo => {
 		const parsed = JSON.parse(e) as LambdaErrorInfo;
