@@ -11,7 +11,7 @@ import {generateServiceName} from '../../../shared/generate-service-name';
 import {validateGcpRegion} from '../../../shared/validate-gcp-region';
 import {validateImageRemotionVersion} from '../../../shared/validate-image-remotion-version';
 import {parsedCloudrunCli} from '../../args';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import {quit} from '../../helpers/quit';
 import {Log} from '../../log';
 

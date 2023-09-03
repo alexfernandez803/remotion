@@ -1,11 +1,17 @@
-import type {GcpRegion} from '../pricing/gcp-regions';
-import {GCP_REGIONS} from '../regions';
+import type {AwsRegion} from '../pricing/aws-regions';
+import {DEFAULT_AWS_REGIONS} from '../pricing/aws-regions';
+import {AWS_REGIONS} from '../regions';
+
+type Options = {
+	enabledByDefaultOnly?: boolean;
+};
 
 /**
- * @description Gets an array of all supported GCP regions of this release of Remotion Cloudrun.
- * @see [Documentation](https://remotion.dev/docs/cloudrun/getregions)
- * @returns {GcpRegion[]} A list of GCP regions.
+ * @description Gets an array of all supported AWS regions of this release of Remotion Lambda.
+ * @see [Documentation](https://remotion.dev/docs/lambda/getregions)
+ * @returns {AwsRegion[]} A list of AWS regions.
  */
-export const getRegions = (): readonly GcpRegion[] => {
-	return GCP_REGIONS;
+export const getRegions = (options?: Options): readonly AwsRegion[] => {
+	const onlyEnabledByDefault = options?.enabledByDefaultOnly ?? false;
+	return onlyEnabledByDefault ? DEFAULT_AWS_REGIONS : AWS_REGIONS;
 };

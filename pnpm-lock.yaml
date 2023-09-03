@@ -923,24 +923,24 @@ importers:
 
   packages/fargate:
     dependencies:
-      '@google-cloud/artifact-registry':
-        specifier: ^2.2.2
-        version: 2.2.2
-      '@google-cloud/functions-framework':
-        specifier: ^3.1.3
-        version: 3.1.3
-      '@google-cloud/logging':
-        specifier: ^10.5.0
-        version: 10.5.0
-      '@google-cloud/resource-manager':
-        specifier: ^4.3.0
-        version: 4.3.0
-      '@google-cloud/run':
-        specifier: ^0.4.0
-        version: 0.4.0
-      '@google-cloud/storage':
-        specifier: ^6.9.1
-        version: 6.9.1
+      '@aws-sdk/client-cloudwatch-logs':
+        specifier: 3.382.0
+        version: 3.382.0
+      '@aws-sdk/client-iam':
+        specifier: 3.382.0
+        version: 3.382.0
+      '@aws-sdk/client-lambda':
+        specifier: 3.382.0
+        version: 3.382.0
+      '@aws-sdk/client-s3':
+        specifier: 3.382.0
+        version: 3.382.0
+      '@aws-sdk/client-service-quotas':
+        specifier: 3.382.0
+        version: 3.382.0
+      '@aws-sdk/client-sts':
+        specifier: 3.382.0
+        version: 3.382.0
       '@remotion/bundler':
         specifier: workspace:*
         version: link:../bundler
@@ -950,6 +950,9 @@ importers:
       '@remotion/renderer':
         specifier: workspace:*
         version: link:../renderer
+      aws-policies:
+        specifier: ^1.0.1
+        version: 1.0.1
       google-auth-library:
         specifier: ^8.7.0
         version: 8.7.0

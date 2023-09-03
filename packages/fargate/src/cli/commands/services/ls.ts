@@ -1,7 +1,7 @@
 import {CliInternals} from '@remotion/cli';
 import {displayServiceInfo} from '.';
 import {getServices} from '../../../api/get-services';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import {Log} from '../../log';
 
 export const SERVICES_LS_SUBCOMMAND = 'ls';

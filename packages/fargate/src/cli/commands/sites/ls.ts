@@ -2,7 +2,7 @@ import {CliInternals} from '@remotion/cli';
 import {displaySiteInfo} from '.';
 import {getSites} from '../../../api/get-sites';
 import {parsedCloudrunCli} from '../../args';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import {Log} from '../../log';
 
 export const SITES_LS_SUBCOMMAND = 'ls';

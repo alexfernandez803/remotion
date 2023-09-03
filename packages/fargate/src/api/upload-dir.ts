@@ -1,8 +1,12 @@
-import type {Dirent} from 'fs';
-import {createReadStream, promises as fs} from 'fs';
-import path from 'path';
-import {makeStorageKey} from '../shared/make-storage-key';
-import {getCloudStorageClient} from './helpers/get-cloud-storage-client';
+import {Upload} from '@aws-sdk/lib-storage';
+import mimeTypes from 'mime-types';
+import type {Dirent} from 'node:fs';
+import {createReadStream, promises as fs} from 'node:fs';
+import path from 'node:path';
+import type {Privacy} from '../defaults';
+import type {AwsRegion} from '../pricing/aws-regions';
+import {getS3Client} from '../shared/aws-clients';
+import {makeS3Key} from '../shared/make-s3-key';
 
 type FileInfo = {
 	name: string;
@@ -27,17 +31,60 @@ export const getDirFiles = (entry: string): MockFile[] => {
 	);
 };
 
+async function getFiles(
+	directory: string,
+	originalDirectory: string,
+	toUpload: string[],
+): Promise<FileInfo[]> {
+	const dirents = await fs.readdir(directory, {withFileTypes: true});
+	const _files = await Promise.all(
+		dirents
+			.map((dirent): [Dirent, string] => {
+				const res = path.resolve(directory, dirent.name);
+				return [dirent, res];
+			})
+			.filter(([dirent, res]) => {
+				const relative = path.relative(originalDirectory, res);
+				if (dirent.isDirectory()) {
+					return true;
+				}
+
+				if (!toUpload.includes(relative)) {
+					return false;
+				}
+
+				return true;
+			})
+			.map(async ([dirent, res]) => {
+				const {size} = await fs.stat(res);
+				return dirent.isDirectory()
+					? getFiles(res, originalDirectory, toUpload)
+					: [
+							{
+								name: res,
+								size,
+							},
+					  ];
+			}),
+	);
+	return _files.flat(1);
+}
+
 export const uploadDir = async ({
 	bucket,
+	region,
 	localDir,
 	onProgress,
 	keyPrefix,
+	privacy,
 	toUpload,
 }: {
 	bucket: string;
+	region: AwsRegion;
 	localDir: string;
 	keyPrefix: string;
 	onProgress: (progress: UploadDirProgress) => void;
+	privacy: Privacy;
 	toUpload: string[];
 }) => {
 	const files = await getFiles(localDir, localDir, toUpload);
@@ -46,66 +93,35 @@ export const uploadDir = async ({
 		progresses[file.name] = 0;
 	}
 
-	async function getFiles(
-		directory: string,
-		originalDirectory: string,
-		filesToUpload: string[],
-	): Promise<FileInfo[]> {
-		const dirents = await fs.readdir(directory, {withFileTypes: true});
-		const _files = await Promise.all(
-			dirents
-				.map((dirent): [Dirent, string] => {
-					const res = path.resolve(directory, dirent.name);
-					return [dirent, res];
-				})
-				.filter(([dirent, res]) => {
-					const relative = path.relative(originalDirectory, res);
-					if (dirent.isDirectory()) {
-						return true;
-					}
+	const client = getS3Client(region, null);
 
-					if (!filesToUpload.includes(relative)) {
-						return false;
-					}
-
-					return true;
-				})
-				.map(async ([dirent, res]) => {
-					const {size} = await fs.stat(res);
-					return dirent.isDirectory()
-						? getFiles(res, originalDirectory, filesToUpload)
-						: [
-								{
-									name: res,
-									size,
-								},
-						  ];
-				}),
-		);
-		return _files.flat(1);
-	}
-
-	const cloudStorageClient = getCloudStorageClient();
-
-	const uploads = files.map((file) => {
-		const filePath = file.name;
-		const destination = makeStorageKey(keyPrefix, localDir, filePath);
-		return new Promise((resolve, reject) => {
-			createReadStream(filePath)
-				.pipe(
-					cloudStorageClient
-						.bucket(bucket)
-						.file(destination)
-						.createWriteStream({public: true}),
-				)
-				.on('error', (error) => reject(error))
-				.on('progress', (p) => {
-					progresses[filePath] = p.bytesWritten ?? 0;
-				})
-				.on('finish', () => resolve('done'));
+	const uploads = files.map((filePath) => {
+		const Key = makeS3Key(keyPrefix, localDir, filePath.name);
+		const Body = createReadStream(filePath.name);
+		const ContentType = mimeTypes.lookup(Key) || 'application/octet-stream';
+		const ACL =
+			privacy === 'no-acl'
+				? undefined
+				: privacy === 'private'
+				? 'private'
+				: 'public-read';
+		const paralellUploads3 = new Upload({
+			client,
+			queueSize: 4,
+			partSize: 5 * 1024 * 1024,
+			params: {
+				Key,
+				Bucket: bucket,
+				Body,
+				ACL,
+				ContentType,
+			},
 		});
+		paralellUploads3.on('httpUploadProgress', (progress) => {
+			progresses[filePath.name] = progress.loaded ?? 0;
+		});
+		return paralellUploads3.done();
 	});
-
 	const promise = Promise.all(uploads);
 
 	const interval = setInterval(() => {

@@ -3,7 +3,7 @@ import {displaySiteInfo, SITES_COMMAND} from '.';
 import {deleteSite} from '../../../api/delete-site';
 import {getSites} from '../../../api/get-sites';
 import {BINARY_NAME} from '../../../shared/constants';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import {confirmCli} from '../../helpers/confirm';
 import {quit} from '../../helpers/quit';
 import {Log} from '../../log';

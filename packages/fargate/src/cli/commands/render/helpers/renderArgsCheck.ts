@@ -8,7 +8,7 @@ import {
 import {convertToServeUrl} from '../../../../shared/convert-to-serve-url';
 import {validatePrivacy} from '../../../../shared/validate-privacy';
 import {parsedCloudrunCli} from '../../../args';
-import {getGcpRegion} from '../../../get-gcp-region';
+import {getGcpRegion} from '../../../get-aws-region';
 import {quit} from '../../../helpers/quit';
 import {Log} from '../../../log';
 import {SERVICES_COMMAND} from '../../services';

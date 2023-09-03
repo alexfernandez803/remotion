@@ -1,4 +1,3 @@
-import {Storage} from '@google-cloud/storage';
 import type {ChromiumOptions} from '@remotion/renderer';
 import {RenderInternals} from '@remotion/renderer';
 import type {ServerResponse} from 'http';
@@ -6,22 +5,18 @@ import {Internals} from 'remotion';
 import {Log} from '../cli/log';
 import {randomHash} from '../shared/random-hash';
 import {getCompositionFromBody} from './helpers/get-composition-from-body';
-import type {
-	FargateRunPayloadType,
-	RenderStillOnFargaterunOutput,
-} from './helpers/payloads';
-import {writeCloudrunError} from './helpers/write-cloudrun-error';
+import type {FargateRunPayloadType} from './helpers/payloads';
+import {writeFargateError} from './helpers/write-fargate-error';
 
 export const renderStillSingleThread = async (
 	body: FargateRunPayloadType,
-	res: ServerResponse,
+	_res: ServerResponse,
 ) => {
 	if (body.type !== 'still') {
 		throw new Error('expected type still');
 	}
 
 	const renderId = randomHash({randomInTests: true});
-
 	try {
 		Log.verbose('Rendering still frame', body);
 
@@ -72,11 +67,11 @@ export const renderStillSingleThread = async (
 			offthreadVideoCacheSizeInBytes: body.offthreadVideoCacheSizeInBytes,
 		});
 		Log.info('Still rendered');
-
+		/* 
 		const storage = new Storage();
 
 		const publicUpload = body.privacy === 'public' || !body.privacy;
-
+	
 		const uploadedResponse = await storage
 			.bucket(body.outputBucket)
 			.upload(tempFilePath, {
@@ -85,7 +80,7 @@ export const renderStillSingleThread = async (
 			});
 
 		Log.info('Still uploaded');
-
+	
 		const uploadedFile = uploadedResponse[0];
 		const renderMetadata = await uploadedFile.getMetadata();
 		const responseData: RenderStillOnFargaterunOutput = {
@@ -100,9 +95,9 @@ export const renderStillSingleThread = async (
 
 		RenderInternals.Log.info('Render Completed:', responseData);
 
-		res.end(JSON.stringify({response: responseData}));
+		res.end(JSON.stringify({response: responseData})); */
 	} catch (err) {
-		await writeCloudrunError({
+		await writeFargateError({
 			bucketName: body.outputBucket,
 			renderId,
 			errorInfo: {

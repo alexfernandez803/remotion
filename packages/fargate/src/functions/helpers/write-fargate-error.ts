@@ -1,14 +1,14 @@
 import {Storage} from '@google-cloud/storage';
 import fs from 'node:fs';
 
-export type CloudrunErrorInfo = {
+export type FargateErrorInfo = {
 	type: 'renderer' | 'browser' | 'stitcher' | 'webhook';
 	message: string;
 	name: string;
 	stack: string;
 };
 
-export const writeCloudrunError = async ({
+export const writeFargateError = async ({
 	bucketName,
 	renderId,
 	errorInfo,
@@ -16,7 +16,7 @@ export const writeCloudrunError = async ({
 }: {
 	bucketName: string;
 	renderId: string;
-	errorInfo: CloudrunErrorInfo;
+	errorInfo: FargateErrorInfo;
 	publicUpload: boolean;
 }) => {
 	const storage = new Storage();

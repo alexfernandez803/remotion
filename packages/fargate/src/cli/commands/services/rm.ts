@@ -2,7 +2,7 @@ import {CliInternals} from '@remotion/cli';
 import {deleteService} from '../../../api/delete-service';
 import {getServiceInfo} from '../../../api/get-service-info';
 import {BINARY_NAME} from '../../../shared/constants';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import {confirmCli} from '../../helpers/confirm';
 import {quit} from '../../helpers/quit';
 import {Log} from '../../log';

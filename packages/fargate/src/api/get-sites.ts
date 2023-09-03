@@ -1,18 +1,22 @@
-import type {GcpRegion} from '../pricing/gcp-regions';
-import {REMOTION_BUCKET_PREFIX} from '../shared/constants';
-import {getCloudStorageClient} from './helpers/get-cloud-storage-client';
+import {lambdaLs} from '../functions/helpers/io';
+import type {AwsRegion} from '../pricing/aws-regions';
+import {getSitesKey} from '../shared/constants';
+import {getAccountId} from '../shared/get-account-id';
+import {makeS3ServeUrl} from '../shared/make-s3-url';
+import type {BucketWithLocation} from './get-buckets';
+import {getRemotionS3Buckets} from './get-buckets';
 
-export type Site = {
+type Site = {
+	sizeInBytes: number;
+	lastModified: number | null;
 	bucketName: string;
 	id: string;
 	serveUrl: string;
-	bucketRegion: GcpRegion;
 };
 
-export type BucketWithLocation = {
-	name: string;
-	creationDate: number;
-	region: GcpRegion;
+export type GetSitesInput = {
+	region: AwsRegion;
+	forceBucketName?: string;
 };
 
 export type GetSitesOutput = {
@@ -21,55 +25,73 @@ export type GetSitesOutput = {
 };
 
 /**
- * @description Gets all the deployed sites for a certain GCP project, within the specified region.
- * @see [Documentation](https://remotion.dev/docs/cloudrun/getsites)
- * @param {GcpRegion} params.region The GCP region that you want to query for.
+ * @description Gets all the deployed sites for a certain AWS region.
+ * @see [Documentation](https://remotion.dev/docs/lambda/getsites)
+ * @param {AwsRegion} params.region The AWS region that you want to query for.
  * @returns {Promise<GetSitesOutput>} A Promise containing an object with `sites` and `bucket` keys. Consult documentation for details.
  */
-export const getSites = async (
-	region: GcpRegion | 'all regions',
-): Promise<GetSitesOutput> => {
-	const cloudStorageClient = getCloudStorageClient();
-	const buckets: BucketWithLocation[] = [];
-	const sites: Site[] = [];
+export const getSites = async ({
+	region,
+	forceBucketName,
+}: GetSitesInput): Promise<GetSitesOutput> => {
+	const {remotionBuckets} = forceBucketName
+		? await getRemotionS3Buckets(region, forceBucketName)
+		: await getRemotionS3Buckets(region);
+	const accountId = await getAccountId({region});
 
-	const [fetchedBuckets] = await cloudStorageClient.getBuckets();
+	const sites: {[key: string]: Site} = {};
 
-	for (const bucket of fetchedBuckets) {
-		if (
-			bucket.name?.startsWith(REMOTION_BUCKET_PREFIX) &&
-			(region === 'all regions' ||
-				bucket.metadata.location === region.toUpperCase())
-		) {
-			const bucketObject = {
-				name: bucket.name,
-				creationDate: new Date(bucket.metadata?.timeCreated).getTime(),
-				region: bucket.metadata.location.toLowerCase(),
-			};
-			buckets.push(bucketObject);
+	for (const bucket of remotionBuckets) {
+		const ls = await lambdaLs({
+			bucketName: bucket.name,
+			prefix: getSitesKey(''),
+			region,
+			expectedBucketOwner: accountId,
+		});
+
+		for (const file of ls) {
+			const siteKeyMatch = file.Key?.match(
+				/sites\/([0-9a-zA-Z-!_.*'()]+)\/(.*)$/,
+			);
+			if (!siteKeyMatch) {
+				throw new Error(
+					`A file was found in the bucket "${bucket.name}" with the key ${file.Key} which is an unexpected folder structure. Delete this file.`,
+				);
+			}
+
+			const [, siteId] = siteKeyMatch;
+			if (!sites[siteId]) {
+				sites[siteId] = {
+					sizeInBytes: 0,
+					bucketName: bucket.name,
+					lastModified: null,
+					id: siteId,
+					serveUrl: makeS3ServeUrl({
+						bucketName: bucket.name,
+						region,
+						subFolder: getSitesKey(siteId),
+					}),
+				};
+			}
+
+			if (file.LastModified) {
+				const currentLastModified = sites[siteId].lastModified;
+				if (
+					currentLastModified === null ||
+					file.LastModified.getTime() > currentLastModified
+				) {
+					sites[siteId].lastModified = file.LastModified.getTime();
+				}
+			}
+
+			if (file.Size) {
+				sites[siteId].sizeInBytes += file.Size;
+			}
 		}
 	}
 
-	for (const bucket of buckets) {
-		const [, , apiResponse] = await cloudStorageClient
-			.bucket(bucket.name)
-			.getFiles({autoPaginate: false, delimiter: '/', prefix: 'sites/'});
-
-		if (!apiResponse.prefixes) {
-			continue; // no sites folder within bucket
-		}
-
-		for (const prefix of apiResponse.prefixes) {
-			const sitePath = prefix.split('/');
-
-			sites.push({
-				bucketName: bucket.name,
-				id: sitePath[1],
-				serveUrl: `https://storage.googleapis.com/${bucket.name}/${prefix}index.html`,
-				bucketRegion: bucket.region,
-			});
-		}
-	}
-
-	return {sites, buckets};
+	const sitesArray: Site[] = Object.keys(sites).map((siteId) => {
+		return sites[siteId];
+	});
+	return {sites: sitesArray, buckets: remotionBuckets};
 };

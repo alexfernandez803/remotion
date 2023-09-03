@@ -8,7 +8,7 @@ import {getOrCreateBucket} from '../../../api/get-or-create-bucket';
 import {BINARY_NAME} from '../../../shared/constants';
 import {validateSiteName} from '../../../shared/validate-site-name';
 import {parsedCloudrunCli} from '../../args';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import type {
 	BucketCreationProgress,
 	BundleProgress,

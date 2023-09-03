@@ -1,22 +1,71 @@
-import type {GcpRegion} from '../pricing/gcp-regions';
-import {getCloudStorageClient} from './helpers/get-cloud-storage-client';
+import {
+	CreateBucketCommand,
+	DeleteBucketOwnershipControlsCommand,
+	DeletePublicAccessBlockCommand,
+	PutBucketAclCommand,
+} from '@aws-sdk/client-s3';
+import type {AwsRegion} from '../pricing/aws-regions';
+import {getS3Client} from '../shared/aws-clients';
 
-type CreateBucketInput = {
-	region: GcpRegion;
+export const createBucket = async ({
+	region,
+	bucketName,
+}: {
+	region: AwsRegion;
 	bucketName: string;
-};
+}) => {
+	await getS3Client(region, null).send(
+		new CreateBucketCommand({
+			Bucket: bucketName,
+		}),
+	);
 
-/**
- * @description Creates a bucket for GCP Cloud Run.
- * @param params.region The region for the bucket to be deployed to.
- * @param params.bucketName The name of the bucket.
- * @returns {Promise<void>} Nothing. Throws if the bucket creation failed.
- */
-export const createBucket = async ({region, bucketName}: CreateBucketInput) => {
-	const cloudStorageClient = getCloudStorageClient();
+	try {
+		await getS3Client(region, null).send(
+			new DeleteBucketOwnershipControlsCommand({
+				Bucket: bucketName,
+			}),
+		);
+	} catch (err) {
+		if ((err as Error).message.includes('Access Denied')) {
+			throw new Error(
+				'Since April 2023, more AWS permissions are required to create an S3 bucket. You need to update your user policy to continue. See https://remotion.dev/docs/lambda/s3-public-access for instructions on how to resolve this issue.',
+			);
+		}
 
-	// metadata: https://googleapis.dev/nodejs/storage/latest/global.html#CreateBucketRequest
-	await cloudStorageClient.createBucket(bucketName, {
-		location: region,
-	});
+		throw err;
+	}
+
+	try {
+		await getS3Client(region, null).send(
+			new DeletePublicAccessBlockCommand({
+				Bucket: bucketName,
+			}),
+		);
+	} catch (err) {
+		if ((err as Error).message.includes('Access Denied')) {
+			throw new Error(
+				'PARTIAL SUCCESS: The s3:PutBucketOwnershipControls was found, but the s3:PutBucketPublicAccessBlock permission is not given. Since April 2023, more AWS permissions are required to create an S3 bucket. You need to update your user policy to continue. You need to update your user policy to continue. See https://remotion.dev/docs/lambda/s3-public-access for instructions on how to resolve this issue.',
+			);
+		}
+
+		throw err;
+	}
+
+	try {
+		await getS3Client(region, null).send(
+			new PutBucketAclCommand({
+				Bucket: bucketName,
+				ACL: 'public-read',
+			}),
+		);
+	} catch (err) {
+		if ((err as Error).message.includes('The bucket does not allow ACLs')) {
+			throw new Error(
+				`Could not add an ACL to the bucket. This might have happened because the bucket was already successfully created before but then failed to configure correctly. We recommend to delete the bucket (${bucketName}) if it is empty and start over to fix the problem.`,
+			);
+		}
+
+		throw err;
+	}
 };

@@ -3,7 +3,7 @@ import {ConfigInternals} from '@remotion/cli/config';
 import {RenderInternals} from '@remotion/renderer';
 import {Internals} from 'remotion';
 import {downloadFile} from '../../../api/download-file';
-import {renderMediaOnCloudrun} from '../../../api/render-media-on-cloudrun';
+import {renderMediaOnCloudrun} from '../../../api/render-media-on-fargate';
 import type {CloudrunCodec} from '../../../shared/validate-gcp-codec';
 import {validateServeUrl} from '../../../shared/validate-serveurl';
 import {parsedCloudrunCli} from '../../args';

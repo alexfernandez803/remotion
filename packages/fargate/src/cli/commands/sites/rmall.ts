@@ -2,7 +2,7 @@ import {displaySiteInfo} from '.';
 import {deleteSite} from '../../../api/delete-site';
 import {getSites} from '../../../api/get-sites';
 import {parsedCloudrunCli} from '../../args';
-import {getGcpRegion} from '../../get-gcp-region';
+import {getGcpRegion} from '../../get-aws-region';
 import {confirmCli} from '../../helpers/confirm';
 import {Log} from '../../log';
 
