@@ -1,7 +1,7 @@
 {
 	"name": "@remotion/fargate",
 	"version": "4.0.27",
-	"description": "GCP Cloud Run alternative to lambda rendering",
+	"description": "AWS Fargate alternative to lambda rendering",
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc -d && cp src/shared/sa-permissions.json dist/shared/sa-permissions.json && pnpm run buildContainer && pnpm run tarInstaller",
@@ -10,27 +10,29 @@
 		"watch": "tsc -w",
 		"lint": "eslint src --ext ts,tsx",
 		"test": "vitest --run",
-		"publish": "cd container && ARTIFACT_REGISTRY_ENV=production node submit.mjs"
+		"publish": "cd container && ARTIFACT_REGISTRY_ENV=production node submit.mjs",
+		"serve": "ts-node src/functions/server.ts"
 	},
 	"dependencies": {
 		"@google-cloud/artifact-registry": "^2.2.2",
 		"@google-cloud/functions-framework": "^3.1.3",
+		"@google-cloud/logging": "^10.5.0",
+		"@google-cloud/resource-manager": "^4.3.0",
 		"@google-cloud/run": "^0.4.0",
 		"@google-cloud/storage": "^6.9.1",
-		"@google-cloud/resource-manager": "^4.3.0",
-		"@google-cloud/logging": "^10.5.0",
 		"@remotion/bundler": "workspace:*",
 		"@remotion/cli": "workspace:*",
 		"@remotion/renderer": "workspace:*",
 		"google-auth-library": "^8.7.0",
+		"http": "0.0.1-security",
 		"remotion": "workspace:*",
 		"zod": "^3.21.4"
 	},
 	"devDependencies": {
 		"@jonny/eslint-config": "3.0.266",
-		"@types/node": "^18.11.2",
 		"@remotion/compositor-linux-x64-gnu": "workspace:*",
 		"@types/minimist": "1.2.2",
+		"@types/node": "^18.11.2",
 		"eslint": "8.42.0",
 		"prettier": "3.0.2",
 		"prettier-plugin-organize-imports": "^3.2.2",

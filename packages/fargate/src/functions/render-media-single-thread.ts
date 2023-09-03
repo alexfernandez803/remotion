@@ -1,7 +1,7 @@
-import type * as ff from '@google-cloud/functions-framework';
 import {Storage} from '@google-cloud/storage';
 import type {ChromiumOptions, RenderMediaOnProgress} from '@remotion/renderer';
 import {RenderInternals} from '@remotion/renderer';
+import type {ServerResponse} from 'http';
 import {Internals} from 'remotion';
 import {randomHash} from '../shared/random-hash';
 import {getCompositionFromBody} from './helpers/get-composition-from-body';
@@ -13,7 +13,7 @@ import {writeCloudrunError} from './helpers/write-cloudrun-error';
 
 export const renderMediaSingleThread = async (
 	body: CloudRunPayloadType,
-	res: ff.Response,
+	res: ServerResponse,
 ) => {
 	if (body.type !== 'media') {
 		throw new Error('expected type media');
@@ -97,6 +97,7 @@ export const renderMediaSingleThread = async (
 			puppeteerInstance: undefined,
 			server: undefined,
 			offthreadVideoCacheSizeInBytes: body.offthreadVideoCacheSizeInBytes,
+			colorSpace: 'default',
 		});
 
 		const storage = new Storage();

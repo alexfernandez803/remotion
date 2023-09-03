@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 
 const bundleRenderLogic = async () => {
-	const outdir = path.join(__dirname, '../../container/dist');
+	const outdir = path.join(__dirname, '../installer/container/dist');
 	fs.mkdirSync(outdir, {
 		recursive: true,
 	});
