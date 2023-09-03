@@ -9,9 +9,9 @@ import type {BrowserSafeApis} from '@remotion/renderer/client';
 import {PureJSAPIs} from '@remotion/renderer/pure';
 import {Internals} from 'remotion';
 import type {
-	CloudRunCrashResponse,
-	CloudRunPayloadType,
 	ErrorResponsePayload,
+	FargateCrashResponse,
+	FargateRunPayloadType,
 	RenderStillOnCloudrunOutput,
 } from '../functions/helpers/payloads';
 import type {GcpRegion} from '../pricing/gcp-regions';
@@ -90,7 +90,7 @@ const renderStillOnCloudrunRaw = async ({
 	delayRenderTimeoutInMilliseconds,
 	offthreadVideoCacheSizeInBytes,
 }: RenderStillOnCloudrunInput): Promise<
-	RenderStillOnCloudrunOutput | ErrorResponsePayload | CloudRunCrashResponse
+	RenderStillOnCloudrunOutput | ErrorResponsePayload | FargateCrashResponse
 > => {
 	validateServeUrl(serveUrl);
 	if (privacy) validatePrivacy(privacy);
@@ -104,7 +104,7 @@ const renderStillOnCloudrunRaw = async ({
 		region,
 	});
 
-	const data: CloudRunPayloadType = {
+	const data: FargateRunPayloadType = {
 		composition,
 		serveUrl,
 		serializedInputPropsWithCustomSchema: Internals.serializeJSONWithDate({
@@ -140,12 +140,12 @@ const renderStillOnCloudrunRaw = async ({
 	});
 
 	const renderResponse = await new Promise<
-		RenderStillOnCloudrunOutput | CloudRunCrashResponse
+		RenderStillOnCloudrunOutput | FargateCrashResponse
 	>((resolve, reject) => {
 		let response:
 			| RenderStillOnCloudrunOutput
 			| ErrorResponsePayload
-			| CloudRunCrashResponse;
+			| FargateCrashResponse;
 
 		const startTime = Date.now();
 		const formattedStartTime = new Date().toISOString();

@@ -1,4 +1,4 @@
 import {executeCommand} from './cli/index';
-export const CloudrunInternals = {
+export const FargateInternals = {
 	executeCommand,
 };

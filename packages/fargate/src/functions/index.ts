@@ -2,14 +2,14 @@ import {RenderInternals} from '@remotion/renderer';
 import type {IncomingMessage, ServerResponse} from 'http';
 import {parseRequestBody} from './helpers/parse-body';
 import type {ErrorResponsePayload} from './helpers/payloads';
-import {CloudRunPayload} from './helpers/payloads';
+import {FargateRunPayload} from './helpers/payloads';
 import {renderMediaSingleThread} from './render-media-single-thread';
 import {renderStillSingleThread} from './render-still-single-thread';
 
 const renderOnCloudRun = async (req: IncomingMessage, res: ServerResponse) => {
 	try {
 		const rawBody = await parseRequestBody(req);
-		const body = CloudRunPayload.parse(rawBody);
+		const body = FargateRunPayload.parse(rawBody);
 		const renderType = body.type;
 		RenderInternals.setLogLevel(body.logLevel);
 		switch (renderType) {

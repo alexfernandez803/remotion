@@ -1,18 +1,13 @@
-import {Storage} from '@google-cloud/storage';
 import type {ChromiumOptions, RenderMediaOnProgress} from '@remotion/renderer';
 import {RenderInternals} from '@remotion/renderer';
 import type {ServerResponse} from 'http';
 import {Internals} from 'remotion';
 import {randomHash} from '../shared/random-hash';
 import {getCompositionFromBody} from './helpers/get-composition-from-body';
-import type {
-	CloudRunPayloadType,
-	RenderMediaOnCloudrunOutput,
-} from './helpers/payloads';
-import {writeCloudrunError} from './helpers/write-cloudrun-error';
+import type {FargateRunPayloadType} from './helpers/payloads';
 
 export const renderMediaSingleThread = async (
-	body: CloudRunPayloadType,
+	body: FargateRunPayloadType,
 	res: ServerResponse,
 ) => {
 	if (body.type !== 'media') {
@@ -32,7 +27,7 @@ export const renderMediaSingleThread = async (
 		let previousProgress = 2;
 		const onProgress: RenderMediaOnProgress = ({progress}) => {
 			if (previousProgress !== progress) {
-				res.write(JSON.stringify({onProgress: progress}) + '\n');
+				// res.write(JSON.stringify({onProgress: progress}) + '\n');
 				previousProgress = progress;
 			}
 		};
@@ -45,7 +40,7 @@ export const renderMediaSingleThread = async (
 			gl: body.chromiumOptions?.gl ?? 'swangle',
 		};
 
-		await RenderInternals.internalRenderMedia({
+		const result = await RenderInternals.internalRenderMedia({
 			composition: {
 				...composition,
 				height: body.forceHeight ?? composition.height,
@@ -100,6 +95,8 @@ export const renderMediaSingleThread = async (
 			colorSpace: 'default',
 		});
 
+		console.log(result);
+		/* 
 		const storage = new Storage();
 
 		const publicUpload = body.privacy === 'public' || !body.privacy;
@@ -125,8 +122,11 @@ export const renderMediaSingleThread = async (
 
 		RenderInternals.Log.info('Render Completed:', responseData);
 		res.end(JSON.stringify({response: responseData}));
+ */
+		RenderInternals.Log.info('Render Completed', renderId);
+		res.end(JSON.stringify({message: 'done'}));
 	} catch (err) {
-		await writeCloudrunError({
+		/* 	await writeCloudrunError({
 			bucketName: body.outputBucket,
 			renderId,
 			errorInfo: {
@@ -137,7 +137,8 @@ export const renderMediaSingleThread = async (
 			},
 			publicUpload: body.privacy === 'public' || !body.privacy,
 		});
-
+ */
+		console.log(err);
 		throw err;
 	}
 };

@@ -1,7 +1,7 @@
 import {RenderInternals} from '@remotion/renderer';
-import type {CloudRunPayloadType} from './payloads';
+import type {FargateRunPayloadType} from './payloads';
 
-export const getCompositionFromBody = async (body: CloudRunPayloadType) => {
+export const getCompositionFromBody = async (body: FargateRunPayloadType) => {
 	const {metadata, propsSize} = await RenderInternals.internalSelectComposition(
 		{
 			serveUrl: body.serveUrl,

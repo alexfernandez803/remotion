@@ -7,7 +7,7 @@ import {renderMediaOnCloudrun} from '../../../api/render-media-on-cloudrun';
 import type {CloudrunCodec} from '../../../shared/validate-gcp-codec';
 import {validateServeUrl} from '../../../shared/validate-serveurl';
 import {parsedCloudrunCli} from '../../args';
-import {displayCrashLogs} from '../../helpers/cloudrun-crash-logs';
+import {displayCrashLogs} from '../../helpers/fargate-crash-logs';
 import {Log} from '../../log';
 import {renderArgsCheck} from './helpers/renderArgsCheck';
 

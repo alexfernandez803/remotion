@@ -16,12 +16,12 @@ import type {RenderMediaOnCloudrunInput} from './api/render-media-on-cloudrun';
 import {renderMediaOnCloudrun} from './api/render-media-on-cloudrun';
 import {renderStillOnCloudrun} from './api/render-still-on-cloudrun';
 import {speculateServiceName} from './api/speculate-service-name';
-import type {RenderMediaOnCloudrunOutput} from './functions/helpers/payloads';
-import {CloudrunInternals} from './internals';
+import type {RenderMediaOnFargateOutput} from './functions/helpers/payloads';
+import {FargateInternals} from './internals';
 import type {GcpRegion} from './pricing/gcp-regions';
 
 export {
-	CloudrunInternals,
+	FargateInternals as CloudrunInternals,
 	deployService,
 	deploySite,
 	deleteSite,
@@ -40,6 +40,6 @@ export type {
 	GcpRegion,
 	DeployServiceInput,
 	DeployServiceOutput,
-	RenderMediaOnCloudrunOutput,
+	RenderMediaOnFargateOutput as RenderMediaOnCloudrunOutput,
 	RenderMediaOnCloudrunInput,
 };

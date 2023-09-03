@@ -14,10 +14,10 @@ import type {BrowserSafeApis} from '@remotion/renderer/client';
 import {PureJSAPIs} from '@remotion/renderer/pure';
 import {Internals} from 'remotion';
 import type {
-	CloudRunCrashResponse,
-	CloudRunPayloadType,
 	ErrorResponsePayload,
-	RenderMediaOnCloudrunOutput,
+	FargateCrashResponse,
+	FargateRunPayloadType,
+	RenderMediaOnFargateOutput,
 } from '../functions/helpers/payloads';
 import type {GcpRegion} from '../pricing/gcp-regions';
 import type {CloudrunCodec} from '../shared/validate-gcp-codec';
@@ -102,7 +102,7 @@ const renderMediaOnCloudrunRaw = async ({
 	preferLossless,
 	offthreadVideoCacheSizeInBytes,
 }: RenderMediaOnCloudrunInput): Promise<
-	RenderMediaOnCloudrunOutput | CloudRunCrashResponse
+	RenderMediaOnFargateOutput | FargateCrashResponse
 > => {
 	const actualCodec = validateCloudrunCodec(codec);
 	validateServeUrl(serveUrl);
@@ -117,7 +117,7 @@ const renderMediaOnCloudrunRaw = async ({
 		region,
 	});
 
-	const data: CloudRunPayloadType = {
+	const data: FargateRunPayloadType = {
 		composition,
 		serveUrl,
 		codec: actualCodec,
@@ -167,13 +167,13 @@ const renderMediaOnCloudrunRaw = async ({
 	});
 
 	const renderResponse = await new Promise<
-		RenderMediaOnCloudrunOutput | CloudRunCrashResponse
+		RenderMediaOnFargateOutput | FargateCrashResponse
 	>((resolve, reject) => {
 		// TODO: Add any sort of type safety
 		let response:
-			| RenderMediaOnCloudrunOutput
+			| RenderMediaOnFargateOutput
 			| ErrorResponsePayload
-			| CloudRunCrashResponse;
+			| FargateCrashResponse;
 
 		const startTime = Date.now();
 		const formattedStartTime = new Date().toISOString();
@@ -274,7 +274,7 @@ const renderMediaOnCloudrunRaw = async ({
  * @param params.concurrency By default, each Cloud Run service renders with concurrency 100% (equal to number of available cores). You may use the option to customize this value.
  * @param params.enforceAudioTrack Render a silent audio track if there wouldn't be any otherwise.
  * @param params.preferLossless Uses a lossless audio codec, if one is available for the codec. If you set audioCodec, it takes priority over preferLossless.
- * @returns {Promise<RenderMediaOnCloudrunOutput>} See documentation for detailed structure
+ * @returns {Promise<RenderMediaOnFargateOutput>} See documentation for detailed structure
  */
 
 export const renderMediaOnCloudrun = PureJSAPIs.wrapWithErrorHandling(

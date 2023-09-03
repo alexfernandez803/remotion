@@ -7,13 +7,13 @@ import {Log} from '../cli/log';
 import {randomHash} from '../shared/random-hash';
 import {getCompositionFromBody} from './helpers/get-composition-from-body';
 import type {
-	CloudRunPayloadType,
-	RenderStillOnCloudrunOutput,
+	FargateRunPayloadType,
+	RenderStillOnFargaterunOutput,
 } from './helpers/payloads';
 import {writeCloudrunError} from './helpers/write-cloudrun-error';
 
 export const renderStillSingleThread = async (
-	body: CloudRunPayloadType,
+	body: FargateRunPayloadType,
 	res: ServerResponse,
 ) => {
 	if (body.type !== 'still') {
@@ -88,7 +88,7 @@ export const renderStillSingleThread = async (
 
 		const uploadedFile = uploadedResponse[0];
 		const renderMetadata = await uploadedFile.getMetadata();
-		const responseData: RenderStillOnCloudrunOutput = {
+		const responseData: RenderStillOnFargaterunOutput = {
 			publicUrl: uploadedFile.publicUrl(),
 			cloudStorageUri: uploadedFile.cloudStorageURI.href,
 			size: renderMetadata[0].size,

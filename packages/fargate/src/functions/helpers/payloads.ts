@@ -18,7 +18,7 @@ const chromiumOptions = z.object({
 });
 const logLevel = z.enum(RenderInternals.logLevels);
 
-export const CloudRunPayload = z.discriminatedUnion('type', [
+export const FargateRunPayload = z.discriminatedUnion('type', [
 	z.object({
 		type: z.literal('media'),
 		serveUrl: z.string(),
@@ -82,7 +82,7 @@ const renderFailResponsePayload = z.object({
 	stack: z.string(),
 });
 
-const renderStillOnCloudrunResponsePayload = z.object({
+const renderStillOnFargateResponsePayload = z.object({
 	type: z.literal('success'),
 	publicUrl: z.string().optional().nullable(),
 	cloudStorageUri: z.string(),
@@ -92,7 +92,7 @@ const renderStillOnCloudrunResponsePayload = z.object({
 	privacy: z.enum(['public-read', 'project-private']),
 });
 
-const renderMediaOnCloudrunResponsePayload = z.object({
+const renderMediaOnFargateResponsePayload = z.object({
 	type: z.literal('success'),
 	publicUrl: z.string().optional().nullable(),
 	cloudStorageUri: z.string(),
@@ -102,7 +102,7 @@ const renderMediaOnCloudrunResponsePayload = z.object({
 	privacy: z.enum(['public-read', 'project-private']),
 });
 
-const cloudRunCrashResponse = z.object({
+const fargateCrashResponse = z.object({
 	type: z.literal('crash'),
 	cloudRunEndpoint: z.string(),
 	message: z.literal(
@@ -113,15 +113,15 @@ const cloudRunCrashResponse = z.object({
 	requestElapsedTimeInSeconds: z.number(),
 });
 
-export type CloudRunPayloadType = z.infer<typeof CloudRunPayload>;
+export type FargateRunPayloadType = z.infer<typeof FargateRunPayload>;
 
-export type RenderStillOnCloudrunOutput = z.infer<
-	typeof renderStillOnCloudrunResponsePayload
+export type RenderStillOnFargaterunOutput = z.infer<
+	typeof renderStillOnFargateResponsePayload
 >;
-export type RenderMediaOnCloudrunOutput = z.infer<
-	typeof renderMediaOnCloudrunResponsePayload
+export type RenderMediaOnFargateOutput = z.infer<
+	typeof renderMediaOnFargateResponsePayload
 >;
 
 export type ErrorResponsePayload = z.infer<typeof renderFailResponsePayload>;
 
-export type CloudRunCrashResponse = z.infer<typeof cloudRunCrashResponse>;
+export type FargateCrashResponse = z.infer<typeof fargateCrashResponse>;

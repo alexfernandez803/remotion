@@ -2,10 +2,10 @@ import {CliInternals} from '@remotion/cli';
 import {extractMemoryFromURL} from '../../api/helpers/extract-mem-from-url';
 import {extractTimeoutFromURL} from '../../api/helpers/extract-time-from-url';
 import {getCloudLoggingClient} from '../../api/helpers/get-cloud-logging-client';
-import type {CloudRunCrashResponse} from '../../functions/helpers/payloads';
+import type {FargateCrashResponse} from '../../functions/helpers/payloads';
 import {Log} from '../log';
 
-export const displayCrashLogs = async (res: CloudRunCrashResponse) => {
+export const displayCrashLogs = async (res: FargateCrashResponse) => {
 	let timeoutPreMsg = '';
 
 	const timeout = extractTimeoutFromURL(res.cloudRunEndpoint);
