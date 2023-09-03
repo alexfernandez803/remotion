@@ -1,5 +1,5 @@
 {
-	"name": "@remotion/cloudrun",
+	"name": "@remotion/fargate",
 	"version": "4.0.27",
 	"description": "GCP Cloud Run alternative to lambda rendering",
 	"main": "dist/index.js",

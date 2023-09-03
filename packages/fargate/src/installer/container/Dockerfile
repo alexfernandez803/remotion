@@ -1,4 +1,4 @@
-FROM debian:bookworm-20230411
+FROM --platform=linux/amd64 debian:bookworm-20230411
 
 RUN apt-get update
 RUN apt-get install -y nodejs npm chromium
