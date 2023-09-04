@@ -1,6 +1,6 @@
 import {CliInternals} from '@remotion/cli';
 import type {ServiceInfo} from '../../../api/get-service-info';
-import {BINARY_NAME} from '../../../shared/constants';
+import {BINARY_NAME} from '../../../api/shared/constants';
 import {quit} from '../../helpers/quit';
 import {Log} from '../../log';
 import {cloudRunDeploySubcommand, CLOUD_RUN_DEPLOY_SUBCOMMAND} from './deploy';

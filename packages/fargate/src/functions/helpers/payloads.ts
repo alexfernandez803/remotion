@@ -1,6 +1,7 @@
 import {RenderInternals} from '@remotion/renderer';
 import {BrowserSafeApis} from '@remotion/renderer/client';
 import {z} from 'zod';
+import {AWS_REGIONS} from '../../pricing/aws-regions';
 
 const codec = z.enum(RenderInternals.validCodecs);
 const audioCodec = z.enum(RenderInternals.validAudioCodecs);
@@ -17,10 +18,11 @@ const chromiumOptions = z.object({
 	userAgent: z.string().optional().nullable(),
 });
 const logLevel = z.enum(RenderInternals.logLevels);
-
+const region = z.enum(AWS_REGIONS);
 export const FargateRunPayload = z.discriminatedUnion('type', [
 	z.object({
 		type: z.literal('media'),
+		region,
 		serveUrl: z.string(),
 		composition: z.string(),
 		forceHeight: z.number().optional().nullable(),
@@ -45,7 +47,7 @@ export const FargateRunPayload = z.discriminatedUnion('type', [
 		muted: z.boolean(),
 		outputBucket: z.string(),
 		outName: z.string().optional(),
-		privacy: z.enum(['public', 'private']).optional(),
+		privacy: z.enum(['public', 'private', 'no-acl']).optional(),
 		logLevel,
 		delayRenderTimeoutInMilliseconds: z.number(),
 		concurrency: z.number().or(z.string()).nullable(),

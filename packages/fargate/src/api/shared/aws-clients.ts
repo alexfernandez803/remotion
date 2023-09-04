@@ -6,7 +6,7 @@ import {ServiceQuotasClient} from '@aws-sdk/client-service-quotas';
 import {STSClient} from '@aws-sdk/client-sts';
 import {fromIni} from '@aws-sdk/credential-providers';
 import {createHash} from 'node:crypto';
-import type {AwsRegion} from '../pricing/aws-regions';
+import type {AwsRegion} from '../../pricing/aws-regions';
 import {checkCredentials} from './check-credentials';
 import {isInsideLambda} from './is-in-lambda';
 

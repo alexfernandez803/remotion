@@ -1,4 +1,4 @@
-import {getCloudStorageClient} from '../api/helpers/get-cloud-storage-client';
+import {getCloudStorageClient} from '../helpers/get-cloud-storage-client';
 
 export const validateServeUrl = async (serveUrl: unknown) => {
 	if (typeof serveUrl !== 'string') {

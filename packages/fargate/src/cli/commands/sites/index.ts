@@ -1,6 +1,6 @@
 import {CliInternals} from '@remotion/cli';
 import type {Site} from '../../../api/get-sites';
-import {BINARY_NAME} from '../../../shared/constants';
+import {BINARY_NAME} from '../../../api/shared/constants';
 import {quit} from '../../helpers/quit';
 import {Log} from '../../log';
 import {sitesCreateSubcommand, SITES_CREATE_SUBCOMMAND} from './create';

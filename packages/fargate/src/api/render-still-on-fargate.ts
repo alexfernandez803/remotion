@@ -8,23 +8,23 @@ import {RenderInternals} from '@remotion/renderer';
 import type {BrowserSafeApis} from '@remotion/renderer/client';
 import {PureJSAPIs} from '@remotion/renderer/pure';
 import {Internals} from 'remotion';
+import type {AwsRegion} from '../client';
 import type {
 	ErrorResponsePayload,
 	FargateCrashResponse,
 	FargateRunPayloadType,
-	RenderStillOnCloudrunOutput,
+	RenderStillOnFargaterunOutput,
 } from '../functions/helpers/payloads';
-import type {GcpRegion} from '../pricing/gcp-regions';
-import {validatePrivacy} from '../shared/validate-privacy';
-import {validateServeUrl} from '../shared/validate-serveurl';
 import {getOrCreateBucket} from './get-or-create-bucket';
 import {getAuthClientForUrl} from './helpers/get-auth-client-for-url';
 import {getCloudrunEndpoint} from './helpers/get-cloudrun-endpoint';
+import {validatePrivacy} from './shared/validate-privacy';
+import {validateServeUrl} from './shared/validate-serveurl';
 
 export type RenderStillOnCloudrunInput = {
 	cloudRunUrl?: string;
 	serviceName?: string;
-	region: GcpRegion;
+	region: AwsRegion;
 	serveUrl: string;
 	composition: string;
 	inputProps?: Record<string, unknown>;
@@ -90,7 +90,7 @@ const renderStillOnCloudrunRaw = async ({
 	delayRenderTimeoutInMilliseconds,
 	offthreadVideoCacheSizeInBytes,
 }: RenderStillOnCloudrunInput): Promise<
-	RenderStillOnCloudrunOutput | ErrorResponsePayload | FargateCrashResponse
+	RenderStillOnFargaterunOutput | ErrorResponsePayload | FargateCrashResponse
 > => {
 	validateServeUrl(serveUrl);
 	if (privacy) validatePrivacy(privacy);
@@ -140,10 +140,10 @@ const renderStillOnCloudrunRaw = async ({
 	});
 
 	const renderResponse = await new Promise<
-		RenderStillOnCloudrunOutput | FargateCrashResponse
+		RenderStillOnFargaterunOutput | FargateCrashResponse
 	>((resolve, reject) => {
 		let response:
-			| RenderStillOnCloudrunOutput
+			| RenderStillOnFargaterunOutput
 			| ErrorResponsePayload
 			| FargateCrashResponse;
 

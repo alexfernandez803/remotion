@@ -1,5 +1,5 @@
 import {CliInternals} from '@remotion/cli';
-import {BINARY_NAME} from '../shared/constants';
+import {BINARY_NAME} from '../api/shared/constants';
 import {PERMISSIONS_COMMAND} from './commands/permissions';
 import {REGIONS_COMMAND} from './commands/regions';
 import {RENDER_COMMAND} from './commands/render';

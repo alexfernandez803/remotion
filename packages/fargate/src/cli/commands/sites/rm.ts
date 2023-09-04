@@ -2,7 +2,7 @@ import {CliInternals} from '@remotion/cli';
 import {displaySiteInfo, SITES_COMMAND} from '.';
 import {deleteSite} from '../../../api/delete-site';
 import {getSites} from '../../../api/get-sites';
-import {BINARY_NAME} from '../../../shared/constants';
+import {BINARY_NAME} from '../../../api/shared/constants';
 import {getGcpRegion} from '../../get-aws-region';
 import {confirmCli} from '../../helpers/confirm';
 import {quit} from '../../helpers/quit';

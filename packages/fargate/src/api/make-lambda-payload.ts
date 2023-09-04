@@ -1,18 +1,18 @@
 import {VERSION} from 'remotion/version';
 import type {LambdaStartPayload, LambdaStatusPayload} from '../defaults';
 import {LambdaRoutines} from '../defaults';
+import type {GetRenderProgressInput} from './get-render-progress';
+import type {RenderMediaOnLambdaInput} from './render-media-on-lambda';
 import {
 	compressInputProps,
 	getNeedsToUpload,
 	serializeOrThrow,
-} from '../shared/compress-props';
-import {validateDownloadBehavior} from '../shared/validate-download-behavior';
-import {validateFramesPerLambda} from '../shared/validate-frames-per-lambda';
-import {validateLambdaCodec} from '../shared/validate-lambda-codec';
-import {validateServeUrl} from '../shared/validate-serveurl';
-import {validateWebhook} from '../shared/validate-webhook';
-import type {GetRenderProgressInput} from './get-render-progress';
-import type {RenderMediaOnLambdaInput} from './render-media-on-lambda';
+} from './shared/compress-props';
+import {validateDownloadBehavior} from './shared/validate-download-behavior';
+import {validateFramesPerLambda} from './shared/validate-frames-per-lambda';
+import {validateLambdaCodec} from './shared/validate-lambda-codec';
+import {validateServeUrl} from './shared/validate-serveurl';
+import {validateWebhook} from './shared/validate-webhook';
 
 export const makeLambdaRenderMediaPayload = async ({
 	rendererFunctionName,

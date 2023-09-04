@@ -1,10 +1,10 @@
 import {CliInternals} from '@remotion/cli';
 
-import type {GcpRegion} from '../pricing/gcp-regions';
+import type {AwsRegion} from '../pricing/aws-regions';
 
 type servicesCommandLineOptions = {
 	help: boolean;
-	region: GcpRegion;
+	region: AwsRegion;
 	['project-id']: string;
 	['service-name']: string;
 	y: boolean;

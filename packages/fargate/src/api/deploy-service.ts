@@ -1,16 +1,16 @@
 import {PureJSAPIs} from '@remotion/renderer/pure';
+import {checkIfServiceExists} from './check-if-service-exists';
+import {constructServiceTemplate} from './helpers/construct-service-deploy-request';
+import {getCloudRunClient} from './helpers/get-cloud-run-client';
 import {
 	DEFAULT_MAX_INSTANCES,
 	DEFAULT_MIN_INSTANCES,
 	DEFAULT_TIMEOUT,
-} from '../shared/constants';
-import {generateServiceName} from '../shared/generate-service-name';
-import {validateGcpRegion} from '../shared/validate-gcp-region';
-import {validateImageRemotionVersion} from '../shared/validate-image-remotion-version';
-import {validateProjectID} from '../shared/validate-project-id';
-import {checkIfServiceExists} from './check-if-service-exists';
-import {constructServiceTemplate} from './helpers/construct-service-deploy-request';
-import {getCloudRunClient} from './helpers/get-cloud-run-client';
+} from './shared/constants';
+import {generateServiceName} from './shared/generate-service-name';
+import {validateGcpRegion} from './shared/validate-gcp-region';
+import {validateImageRemotionVersion} from './shared/validate-image-remotion-version';
+import {validateProjectID} from './shared/validate-project-id';
 
 export type DeployServiceInput = {
 	performImageVersionValidation?: boolean;

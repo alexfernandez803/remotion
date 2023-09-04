@@ -1,8 +1,8 @@
 import type {AwsRegion} from '../pricing/aws-regions';
-import {REMOTION_BUCKET_PREFIX} from '../shared/constants';
-import {makeBucketName} from '../shared/validate-bucketname';
 import {createBucket} from './create-bucket';
 import {getRemotionS3Buckets} from './get-buckets';
+import {REMOTION_BUCKET_PREFIX} from './shared/constants';
+import {makeBucketName} from './shared/validate-bucketname';
 
 export type GetOrCreateBucketInput = {
 	region: AwsRegion;

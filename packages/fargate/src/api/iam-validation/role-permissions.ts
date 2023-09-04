@@ -4,7 +4,7 @@ import {
 	LOG_GROUP_PREFIX,
 	REMOTION_BUCKET_PREFIX,
 	RENDER_FN_PREFIX,
-} from '../../shared/constants';
+} from '../shared/constants';
 
 export const rolePermissions: {
 	actions: (s3 | iam | lambda | logs)[];

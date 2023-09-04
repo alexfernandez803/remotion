@@ -1,5 +1,5 @@
+import {GCP_REGIONS} from '../../regions';
 import type {GcpRegion} from '../pricing/gcp-regions';
-import {GCP_REGIONS} from '../regions';
 import {REMOTION_BUCKET_PREFIX} from './constants';
 import {randomHash} from './random-hash';
 

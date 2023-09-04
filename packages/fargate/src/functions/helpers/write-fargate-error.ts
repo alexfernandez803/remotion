@@ -1,4 +1,3 @@
-import {Storage} from '@google-cloud/storage';
 import fs from 'node:fs';
 
 export type FargateErrorInfo = {

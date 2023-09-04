@@ -4,9 +4,9 @@ import {getServices} from '../../../../api/get-services';
 import {
 	BINARY_NAME,
 	DEFAULT_OUTPUT_PRIVACY,
-} from '../../../../shared/constants';
-import {convertToServeUrl} from '../../../../shared/convert-to-serve-url';
-import {validatePrivacy} from '../../../../shared/validate-privacy';
+} from '../../../../api/shared/constants';
+import {convertToServeUrl} from '../../../../api/shared/convert-to-serve-url';
+import {validatePrivacy} from '../../../../api/shared/validate-privacy';
 import {parsedCloudrunCli} from '../../../args';
 import {getGcpRegion} from '../../../get-aws-region';
 import {quit} from '../../../helpers/quit';

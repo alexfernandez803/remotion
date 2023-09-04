@@ -1,14 +1,17 @@
 import type {ChromiumOptions, RenderMediaOnProgress} from '@remotion/renderer';
 import {RenderInternals} from '@remotion/renderer';
+import fs from 'fs';
 import type {ServerResponse} from 'http';
 import {Internals} from 'remotion';
-import {randomHash} from '../shared/random-hash';
+import {randomHash} from '../api/shared/random-hash';
 import {getCompositionFromBody} from './helpers/get-composition-from-body';
+import {lambdaWriteFile} from './helpers/io';
 import type {FargateRunPayloadType} from './helpers/payloads';
+import {writeFargateError} from './helpers/write-fargate-error';
 
 export const renderMediaSingleThread = async (
 	body: FargateRunPayloadType,
-	res: ServerResponse,
+	_res: ServerResponse,
 ) => {
 	if (body.type !== 'media') {
 		throw new Error('expected type media');
@@ -28,11 +31,10 @@ export const renderMediaSingleThread = async (
 		const onProgress: RenderMediaOnProgress = ({progress}) => {
 			if (previousProgress !== progress) {
 				// res.write(JSON.stringify({onProgress: progress}) + '\n');
+				RenderInternals.Log.info('Render progress', progress);
 				previousProgress = progress;
 			}
 		};
-
-		res.writeHead(200, {'Content-Type': 'text/html'});
 
 		const actualChromiumOptions: ChromiumOptions = {
 			...body.chromiumOptions,
@@ -40,7 +42,7 @@ export const renderMediaSingleThread = async (
 			gl: body.chromiumOptions?.gl ?? 'swangle',
 		};
 
-		const result = await RenderInternals.internalRenderMedia({
+		await RenderInternals.internalRenderMedia({
 			composition: {
 				...composition,
 				height: body.forceHeight ?? composition.height,
@@ -95,8 +97,52 @@ export const renderMediaSingleThread = async (
 			colorSpace: 'default',
 		});
 
-		console.log(result);
-		/* 
+		lambdaWriteFile({
+			bucketName: body.outputBucket,
+			key: `renders/${renderId}/${body.outName ?? defaultOutName}`,
+			body: fs.createReadStream(tempFilePath),
+			region: body.region,
+			privacy: 'private',
+			expectedBucketOwner: null,
+			downloadBehavior: null,
+			customCredentials: null,
+		});
+	} catch (err) {
+		await writeFargateError({
+			bucketName: body.outputBucket,
+			renderId,
+			errorInfo: {
+				name: (err as Error).name as string,
+				message: (err as Error).message as string,
+				stack: (err as Error).stack as string,
+				type: 'renderer',
+			},
+			publicUpload: body.privacy === 'public' || !body.privacy,
+		});
+
+		RenderInternals.Log.error('Render error', err);
+		throw err;
+	}
+};
+
+/**
+		
+
+		
+		// DO this
+		const responseData: RenderMediaOnFargateOutput = {
+			type: 'success',
+			publicUrl: null,
+			size: renderMetadata[0].size,
+			bucketName: body.outputBucket,
+			renderId,
+			privacy: 'project-private',
+		};
+
+		RenderInternals.Log.info('Render Completed:', responseData);
+		res.end(JSON.stringify({response: responseData}));
+		 */
+/* 
 		const storage = new Storage();
 
 		const publicUpload = body.privacy === 'public' || !body.privacy;
@@ -110,35 +156,10 @@ export const renderMediaSingleThread = async (
 
 		const uploadedFile = uploadedResponse[0];
 		const renderMetadata = await uploadedFile.getMetadata();
-		const responseData: RenderMediaOnCloudrunOutput = {
-			type: 'success',
-			publicUrl: publicUpload ? uploadedFile.publicUrl() : null,
-			cloudStorageUri: uploadedFile.cloudStorageURI.href,
-			size: renderMetadata[0].size,
-			bucketName: body.outputBucket,
-			renderId,
-			privacy: publicUpload ? 'public-read' : 'project-private',
-		};
-
-		RenderInternals.Log.info('Render Completed:', responseData);
-		res.end(JSON.stringify({response: responseData}));
- */
+		
+ 
 		RenderInternals.Log.info('Render Completed', renderId);
-		res.end(JSON.stringify({message: 'done'}));
-	} catch (err) {
-		/* 	await writeCloudrunError({
-			bucketName: body.outputBucket,
-			renderId,
-			errorInfo: {
-				name: (err as Error).name as string,
-				message: (err as Error).message as string,
-				stack: (err as Error).stack as string,
-				type: 'renderer',
-			},
-			publicUpload: body.privacy === 'public' || !body.privacy,
-		});
- */
-		console.log(err);
-		throw err;
-	}
+		//	res.end(JSON.stringify({message: 'done'}));
+	
 };
+*/

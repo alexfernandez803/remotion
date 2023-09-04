@@ -6,10 +6,10 @@ import {
 	DEFAULT_MAX_INSTANCES,
 	DEFAULT_MIN_INSTANCES,
 	DEFAULT_TIMEOUT,
-} from '../../../shared/constants';
-import {generateServiceName} from '../../../shared/generate-service-name';
-import {validateGcpRegion} from '../../../shared/validate-gcp-region';
-import {validateImageRemotionVersion} from '../../../shared/validate-image-remotion-version';
+} from '../../../api/shared/constants';
+import {generateServiceName} from '../../../api/shared/generate-service-name';
+import {validateGcpRegion} from '../../../api/shared/validate-gcp-region';
+import {validateImageRemotionVersion} from '../../../api/shared/validate-image-remotion-version';
 import {parsedCloudrunCli} from '../../args';
 import {getGcpRegion} from '../../get-aws-region';
 import {quit} from '../../helpers/quit';

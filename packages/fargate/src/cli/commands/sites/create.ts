@@ -5,8 +5,8 @@ import {Internals} from 'remotion';
 import {displaySiteInfo} from '.';
 import {deploySite} from '../../../api/deploy-site';
 import {getOrCreateBucket} from '../../../api/get-or-create-bucket';
-import {BINARY_NAME} from '../../../shared/constants';
-import {validateSiteName} from '../../../shared/validate-site-name';
+import {BINARY_NAME} from '../../../api/shared/constants';
+import {validateSiteName} from '../../../api/shared/validate-site-name';
 import {parsedCloudrunCli} from '../../args';
 import {getGcpRegion} from '../../get-aws-region';
 import type {

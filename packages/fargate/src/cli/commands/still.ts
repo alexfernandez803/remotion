@@ -4,7 +4,7 @@ import {RenderInternals} from '@remotion/renderer';
 import {Internals} from 'remotion';
 import {downloadFile} from '../../api/download-file';
 import {renderStillOnCloudrun} from '../../api/render-still-on-fargate';
-import {validateServeUrl} from '../../shared/validate-serveurl';
+import {validateServeUrl} from '../../api/shared/validate-serveurl';
 import {displayCrashLogs} from '../helpers/fargate-crash-logs';
 import {Log} from '../log';
 import {renderArgsCheck} from './render/helpers/renderArgsCheck';

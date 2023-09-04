@@ -1,9 +1,9 @@
 import type {AwsRegion} from '../pricing/aws-regions';
-import type {CustomCredentials} from '../shared/aws-clients';
-import {callLambda} from '../shared/call-lambda';
-import type {RenderProgress} from '../shared/constants';
-import {LambdaRoutines} from '../shared/constants';
 import {getRenderProgressPayload} from './make-lambda-payload';
+import type {CustomCredentials} from './shared/aws-clients';
+import {callLambda} from './shared/call-lambda';
+import type {RenderProgress} from './shared/constants';
+import {LambdaRoutines} from './shared/constants';
 
 export type GetRenderProgressInput = {
 	functionName: string;

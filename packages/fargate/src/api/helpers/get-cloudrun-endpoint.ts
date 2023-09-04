@@ -1,7 +1,7 @@
-import {validateCloudRunUrl} from '../../shared/validate-cloudrun-url';
-import {validateRegion} from '../../shared/validate-region';
-import {validateServiceName} from '../../shared/validate-service-name';
 import {getServiceInfo} from '../get-service-info';
+import {validateCloudRunUrl} from '../shared/validate-cloudrun-url';
+import {validateRegion} from '../shared/validate-region';
+import {validateServiceName} from '../shared/validate-service-name';
 
 export type getCloudrunEndpointInput = {
 	cloudRunUrl?: string;
