@@ -1,5 +1,5 @@
 ---
-image: /generated/articles-docs-using-fonts.png
+image: /generated/articles-docs-fonts.png
 title: Using fonts
 sidebar_label: Fonts
 id: fonts
@@ -26,10 +26,10 @@ const GoogleFontsComp: React.FC = () => {
 
 ## Google Fonts using CSS
 
-Import the CSS that Google Fonts gives you. From version 2.2 on, Remotion will automatically wait until the fonts are loaded.
+Import the CSS that Google Fonts gives you.
 
 :::note
-This does not work if you use [`lazyComponent`](/docs/composition#lazycomponent).
+From version 2.2 on, Remotion will automatically wait until the fonts are loaded.  
 :::
 
 ```css title="font.css"
@@ -44,11 +44,41 @@ const MyComp: React.FC = () => {
 };
 ```
 
-## Example using local fonts
+## Local fonts using `@remotion/fonts`
 
-Put the font into your `public/` folder and use the [`staticFile()`](/docs/staticfile) API to load the font. Use the `FontFace` browser API to load the font. [Click here](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face) to read the syntax that can be used for the Font Face API.
+_available from v4.0.164_
 
-Put this somewhere in your app where it gets executed:
+Put the font into your `public/` folder.  
+Put the [`loadFont()`](/docs/fonts-api/load-font) call somewhere in your app where it gets executed:
+
+```tsx twoslash title="load-fonts.ts"
+import { loadFont } from "@remotion/fonts";
+import { staticFile } from "remotion";
+
+const fontFamily = "Inter";
+
+loadFont({
+  family: fontFamily,
+  url: staticFile("Inter-Regular.woff2"),
+  weight: "500",
+}).then(() => {
+  console.log("Font loaded!");
+});
+```
+
+The font is now available for use:
+
+```tsx twoslash title="MyComp.tsx"
+const fontFamily = "Inter";
+
+// ---cut---
+
+<div style={{ fontFamily: fontFamily }}>Some text</div>;
+```
+
+## Local fonts (manually)
+
+You may load fonts by using the web-native [`FontFace`](https://developer.mozilla.org/en-US/docs/Web/API/FontFace) API.
 
 ```tsx twoslash title="load-fonts.ts"
 import { continueRender, delayRender, staticFile } from "remotion";
@@ -69,16 +99,5 @@ font
 ```
 
 :::note
-Make sure to include quotes [around the URL](/docs/troubleshooting/could-not-be-parsed-as-a-value-list).  
-The `format` should be one of `woff2` for WOFF2 files, `woff` for WOFF, `opentype` for OTF, `truetype` for TTF.
-:::
-
-The font is now available for use:
-
-```tsx twoslash title="MyComp.tsx"
-<div style={{ fontFamily: "Bangers" }}>Some text</div>
-```
-
-:::info
 If your Typescript types give errors, install the newest version of the `@types/web` package.
 :::

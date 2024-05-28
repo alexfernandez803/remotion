@@ -1,6 +1,6 @@
 {
   "name": "docs",
-  "version": "4.0.163",
+  "version": "4.0.164",
   "private": true,
   "scripts": {
     "formatting": "prettier src --check",
@@ -34,6 +34,7 @@
     "@remotion/bundler": "workspace:*",
     "@remotion/cli": "workspace:*",
     "@remotion/cloudrun": "workspace:*",
+    "@remotion/fonts": "workspace:*",
     "@remotion/gif": "workspace:*",
     "@remotion/google-fonts": "workspace:*",
     "@remotion/install-whisper-cpp": "workspace:*",
