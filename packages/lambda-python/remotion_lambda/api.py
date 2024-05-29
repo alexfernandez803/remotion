@@ -20,7 +20,7 @@ class S3Utils:
         self.serve_url = serve_url
         self.function_name = function_name
         self.s3 = boto3.client("s3")
-        
+
 
 
     def __init__(self, bucket_name):
@@ -31,3 +31,7 @@ class S3Utils:
 
     def dump(self, key, obj):
         return self.bucket.Object(key=key).put(Body=json.dumps(obj))
+    
+    def _create_bucket(self, bucket_name): 
+        self.s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={
+         'LocationConstraint': self.region})
